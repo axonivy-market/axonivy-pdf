@@ -404,7 +404,7 @@ public class PdfFactoryBean {
 			throw new PdfOperationException("No file uploaded. Please upload a workbook file first.");
 		}
 
-		String orginalFileName = uploadedFile.getFileName();
+		String originalFileName = uploadedFile.getFileName();
 		try (InputStream input = uploadedFile.getInputStream();
 				ByteArrayOutputStream output = new ByteArrayOutputStream()) {
 			Document pdfDocument = new Document(input);
@@ -416,15 +416,15 @@ public class PdfFactoryBean {
 			} else if (FileExtension.PPTX == getSelectedFileExtension()) {
 				pdfDocument.save(output, SaveFormat.Pptx);
 			} else if (FileExtension.JPG == getSelectedFileExtension()) {
-				convertPdfToImagesZip(pdfDocument, orginalFileName, FileExtension.JPG.getExtension());
+				convertPdfToImagesZip(pdfDocument, originalFileName, FileExtension.JPG.getExtension());
 				return;
 			} else if (FileExtension.JPEG == getSelectedFileExtension()) {
-				convertPdfToImagesZip(pdfDocument, orginalFileName, FileExtension.JPEG.getExtension());
+				convertPdfToImagesZip(pdfDocument, originalFileName, FileExtension.JPEG.getExtension());
 				return;
 			}
 			pdfDocument.close();
 			setFileForDownload(buildFileStream(output.toByteArray(),
-					updateFileWithNewExtension(orginalFileName, getSelectedFileExtension())));
+					updateFileWithNewExtension(originalFileName, getSelectedFileExtension())));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
