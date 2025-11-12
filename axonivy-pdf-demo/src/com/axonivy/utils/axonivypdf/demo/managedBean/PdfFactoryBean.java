@@ -413,8 +413,8 @@ public class PdfFactoryBean {
 				pdfDocument.save(output, SaveFormat.DocX);
 			} else if (FileExtension.XLSX == getSelectedFileExtension()) {
 				pdfDocument.save(output, SaveFormat.Excel);
-			} else if (FileExtension.XLSX == getSelectedFileExtension()) {
-				pdfDocument.save(output, SaveFormat.Excel);
+			} else if (FileExtension.PPTX == getSelectedFileExtension()) {
+				pdfDocument.save(output, SaveFormat.Pptx);
 			} else if (FileExtension.JPG == getSelectedFileExtension()) {
 				convertPdfToImagesZip(pdfDocument, orginalFileName, FileExtension.JPG.getExtension());
 				return;
