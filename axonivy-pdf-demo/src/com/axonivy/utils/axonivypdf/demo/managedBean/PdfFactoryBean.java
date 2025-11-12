@@ -477,6 +477,8 @@ public class PdfFactoryBean {
 			newDoc.close();
 			setFileForDownload(buildFileStream(output.toByteArray(),
 					updateRangeSplitFileWithZipExtension(originalFileName, getStartPage(), getEndPage())));
+
+			setSplitOption(SplitOption.ALL);
 		}
 	}
 

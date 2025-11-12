@@ -40,7 +40,7 @@
 
 				<p:commandButton
 					value="#{ivy.cms.co('/Dialogs/com/axonivy/utils/axonivypdf/demo/SplitPdf/SplitAndDownload')}"
-					ajax="false"
+					ajax="true" process="form" update="@this form form:range-panel"
 					actionListener="#{pdfFactoryBean.splitAndDownloadZipPdf}"
 					icon="pi pi-download" styleClass="mt-3 ui-button-outlined block">
 					<p:fileDownload value="#{pdfFactoryBean.fileForDownload}" />
