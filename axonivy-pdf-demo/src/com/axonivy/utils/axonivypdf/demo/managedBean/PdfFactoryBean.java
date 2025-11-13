@@ -415,6 +415,12 @@ public class PdfFactoryBean {
 				pdfDocument.save(output, SaveFormat.Excel);
 			} else if (FileExtension.PPTX == getSelectedFileExtension()) {
 				pdfDocument.save(output, SaveFormat.Pptx);
+			} else if (FileExtension.HTML == getSelectedFileExtension()) {
+				HtmlSaveOptions options = new HtmlSaveOptions();
+				options.setPartsEmbeddingMode(HtmlSaveOptions.PartsEmbeddingModes.EmbedAllIntoHtml);
+				options.setRasterImagesSavingMode(HtmlSaveOptions.RasterImagesSavingModes.AsPngImagesEmbeddedIntoSvg);
+				options.setSplitIntoPages(false);
+				pdfDocument.save(output, options);
 			} else if (FileExtension.JPG == getSelectedFileExtension()) {
 				convertPdfToImagesZip(pdfDocument, originalFileName, FileExtension.JPG.getExtension());
 				return;
