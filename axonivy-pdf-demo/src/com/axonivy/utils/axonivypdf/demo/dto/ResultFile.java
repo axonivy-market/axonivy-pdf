@@ -5,15 +5,6 @@ import org.primefaces.model.DefaultStreamedContent;
 public class ResultFile {
 	private String name;
 	private int pageNumber;
-	
-	public int getPageNumber() {
-		return pageNumber;
-	}
-
-	public void setPageNumber(int pageNumber) {
-		this.pageNumber = pageNumber;
-	}
-
 	private byte[] bytes;
 	private DefaultStreamedContent defaultStreamedContent;
 
@@ -40,5 +31,13 @@ public class ResultFile {
 
 	public void setBytes(byte[] bytes) {
 		this.bytes = bytes;
+	}
+
+	public int getPageNumber() {
+		return pageNumber;
+	}
+
+	public void setPageNumber(int pageNumber) {
+		this.pageNumber = pageNumber;
 	}
 }

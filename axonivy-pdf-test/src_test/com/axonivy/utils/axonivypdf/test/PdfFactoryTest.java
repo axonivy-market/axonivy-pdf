@@ -71,7 +71,6 @@ public class PdfFactoryTest {
 	private void withMockedLicense(TestLogic logic) throws Exception {
 		try (MockedStatic<ThirdPartyLicenses> mockedThirdParty = Mockito.mockStatic(ThirdPartyLicenses.class)) {
 			InputStream dummyStream = mock(InputStream.class);
-//			InputStream dummyStream = new ByteArrayInputStream("<License></License>".getBytes(StandardCharsets.UTF_8));
 			mockedThirdParty.when(ThirdPartyLicenses::getDocumentFactoryLicense).thenReturn(dummyStream);
 			try (MockedConstruction<License> mockedLicenseConstructor = Mockito.mockConstruction(License.class,
 					(mock, context) -> doNothing().when(mock).setLicense(any(InputStream.class)))) {
