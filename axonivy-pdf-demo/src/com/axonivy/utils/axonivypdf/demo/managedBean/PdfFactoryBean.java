@@ -33,6 +33,7 @@ import com.aspose.pdf.FontRepository;
 import com.aspose.pdf.FontStyles;
 import com.aspose.pdf.HighlightAnnotation;
 import com.aspose.pdf.HorizontalAlignment;
+import com.aspose.pdf.HtmlSaveOptions;
 import com.aspose.pdf.Image;
 import com.aspose.pdf.ImageFormat;
 import com.aspose.pdf.ImagePlacement;
