@@ -60,10 +60,12 @@ import com.axonivy.utils.axonivypdf.demo.enums.SplitOption;
 import com.axonivy.utils.axonivypdf.demo.enums.TextExtractType;
 import com.axonivy.utils.axonivypdf.demo.exception.PdfOperationException;
 import com.axonivy.utils.axonivypdf.service.PdfFactory;
+import com.axonivy.utils.axonivypdf.service.PdfService;
 
 @ManagedBean
 @ViewScoped
 public class PdfFactoryBean {
+	private PdfService pdfService;
 	private static final String DOT = ".";
 	private static final float DEFAULT_FONT_SIZE = 12;
 	private static final float DEFAULT_PAGE_NUMBER_FONT_SIZE = 14.0F;
@@ -106,6 +108,7 @@ public class PdfFactoryBean {
 
 	@PostConstruct
 	public void init() {
+		pdfService = new PdfService();
 		PdfFactory.loadLicense();
 	}
 
@@ -132,58 +135,18 @@ public class PdfFactoryBean {
 		}
 	}
 
-	public void addHeader() {
+	public void addHeader() throws IOException {
 		if (uploadedFile == null) {
 			throw new PdfOperationException("No file uploaded. Please upload a workbook file first.");
 		}
-
-		String originalFileName = uploadedFile.getFileName();
-		try (InputStream input = uploadedFile.getInputStream();
-				ByteArrayOutputStream output = new ByteArrayOutputStream();) {
-			Document pdfDocument = new Document(input);
-
-			TextStamp textStamp = new TextStamp(headerText);
-			textStamp.setTopMargin(10);
-			textStamp.setHorizontalAlignment(HorizontalAlignment.Center);
-			textStamp.setVerticalAlignment(VerticalAlignment.Top);
-
-			for (Page page : pdfDocument.getPages()) {
-				page.addStamp(textStamp);
-			}
-			pdfDocument.save(output);
-			pdfDocument.close();
-
-			setFileForDownload(buildFileStream(output.toByteArray(), updateFileWithHeaderName(originalFileName)));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		setFileForDownload(pdfService.addHeader(uploadedFile, headerText));
 	}
 
-	public void addFooter() {
+	public void addFooter() throws IOException {
 		if (uploadedFile == null) {
 			throw new PdfOperationException("No file uploaded. Please upload a workbook file first.");
 		}
-
-		String originalFileName = uploadedFile.getFileName();
-		try (InputStream input = uploadedFile.getInputStream();
-				ByteArrayOutputStream output = new ByteArrayOutputStream();) {
-			Document pdfDocument = new Document(input);
-
-			TextStamp textStamp = new TextStamp(footerText);
-			textStamp.setBottomMargin(10);
-			textStamp.setHorizontalAlignment(HorizontalAlignment.Center);
-			textStamp.setVerticalAlignment(VerticalAlignment.Bottom);
-
-			for (Page page : pdfDocument.getPages()) {
-				page.addStamp(textStamp);
-			}
-			pdfDocument.save(output);
-			pdfDocument.close();
-
-			setFileForDownload(buildFileStream(output.toByteArray(), updateFileWithFooterName(originalFileName)));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		setFileForDownload(pdfService.addFooter(uploadedFile, footerText));
 	}
 
 	public void addWatermark() {
@@ -514,89 +477,26 @@ public class PdfFactoryBean {
 		return zipPath;
 	}
 
-	public void convertImageToPdf() {
+	public void convertImageToPdf() throws IOException {
 		if (uploadedFile == null) {
 			throw new PdfOperationException("No file uploaded. Please upload a workbook file first.");
 		}
-		String originalFileName = uploadedFile.getFileName();
-
-		try (InputStream input = uploadedFile.getInputStream();
-				ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-			BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(uploadedFile.getContent()));
-			int widthPx = bufferedImage.getWidth();
-			int heightPx = bufferedImage.getHeight();
-
-			Document pdfDocument = new Document();
-			Page page = pdfDocument.getPages().add();
-			page.getPageInfo().setWidth(widthPx);
-			page.getPageInfo().setHeight(heightPx);
-			page.getPageInfo().setMargin(new MarginInfo(0, 0, 0, 0));
-
-			Image image = new Image();
-			image.setImageStream(uploadedFile.getInputStream());
-			page.getParagraphs().add(image);
-			pdfDocument.save(output);
-			pdfDocument.close();
-
-			setFileForDownload(buildFileStream(output.toByteArray(), updateFileWithPdfExtension(originalFileName)));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		setFileForDownload(pdfService.convertImageToPdf(uploadedFile));
 	}
 
-	public void merge() {
+	public void merge() throws IOException {
 		if (uploadedFiles == null || uploadedFiles.getFiles().isEmpty()) {
 			throw new PdfOperationException("No file uploaded. Please upload a workbook file first.");
 		}
-
-		try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-			int uploadedFilesSize = uploadedFiles.getFiles().size();
-			InputStream[] inputStreams = new InputStream[uploadedFilesSize];
-
-			for (int i = 0; i < uploadedFilesSize; i++) {
-				inputStreams[i] = uploadedFiles.getFiles().get(i).getInputStream();
-			}
-
-			PdfFileEditor editor = new PdfFileEditor();
-			boolean result = editor.concatenate(inputStreams, output);
-			if (!result) {
-				return;
-			}
-			setFileForDownload(buildFileStream(output.toByteArray(), MERGED_DOCUMENT_NAME));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		setFileForDownload(pdfService.merge(uploadedFiles));
 	}
 
-	public void convertHtmlToPdf() {
+	public void convertHtmlToPdf() throws IOException {
 		if (uploadedFile == null) {
 			throw new PdfOperationException("No file uploaded. Please upload a workbook file first.");
 		}
-		String originalFileName = uploadedFile.getFileName();
 
-		try (InputStream input = uploadedFile.getInputStream();
-				ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-			String fileName = originalFileName.toLowerCase();
-			if (fileName.endsWith(FileExtension.HTML.getExtension())) {
-				String html = new String(input.readAllBytes(), StandardCharsets.UTF_8);
-				Document pdfDoc = new Document();
-				Page page = pdfDoc.getPages().add();
-				TextFragment text = new TextFragment(html);
-				text.getTextState().setFontSize(DEFAULT_FONT_SIZE);
-				text.getTextState().setFont(FontRepository.findFont(TIMES_NEW_ROMAN_FONT));
-				page.getParagraphs().add(text);
-				pdfDoc.save(output);
-				pdfDoc.close();
-			} else if (fileName.endsWith(FileExtension.PDF.getExtension())) {
-				Document pdfDoc = new Document(input);
-				pdfDoc.save(output);
-				pdfDoc.close();
-			}
-
-			setFileForDownload(buildFileStream(output.toByteArray(), updateFileWithPdfExtension(originalFileName)));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		setFileForDownload(pdfService.convertHtmlToPdf(uploadedFile));
 	}
 
 	private String getBaseName(String originalFileName, String substitudeName) {

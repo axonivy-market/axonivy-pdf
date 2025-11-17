@@ -32,23 +32,16 @@ import com.axonivy.utils.axonivypdf.service.PdfFactory;
 import com.axonivy.utils.axonivypdf.service.PdfService;
 
 import ch.ivyteam.ivy.environment.Ivy;
+import ch.ivyteam.ivy.environment.IvyTest;
 
+@IvyTest
 public class PdfServiceTest {
 	private PdfService pdfService;
-
-	@PostConstruct
-	public void init() {
-		PdfFactory.loadLicense();
-	}
 
 	@BeforeEach
 	void setUp() throws Exception {
 		pdfService = new PdfService();
-
-		License license = new License();
-		try (InputStream lic = getClass().getClassLoader().getResourceAsStream("aspose.test.lic")) {
-			license.setLicense(lic);
-		}
+		PdfFactory.loadLicense();
 	}
 
 	private byte[] createMockPdf() throws Exception {
@@ -136,17 +129,12 @@ public class PdfServiceTest {
 
 	@Test
 	void testAddHeader() throws Exception {
-		// --- 1. Create a real minimal PDF ---
-		byte[] pdfBytes = createMockPdf(); // THIS is your real PDF content
-
-		// --- 2. Mock UploadedFile using the REAL PDF bytes ---
+		byte[] pdfBytes = createMockPdf();
 		UploadedFile uploadedFile = mock(UploadedFile.class);
 		when(uploadedFile.getFileName()).thenReturn("a.pdf");
 		when(uploadedFile.getInputStream()).thenReturn(new ByteArrayInputStream(pdfBytes));
 
 		String headerText = "HEADER_TEST";
-
-		// --- 3. Execute ---
 		DefaultStreamedContent result = pdfService.addHeader(uploadedFile, headerText);
 
 		assertNotNull(result);
@@ -155,7 +143,6 @@ public class PdfServiceTest {
 		byte[] resultPdfBytes = result.getStream().get().readAllBytes();
 		assertTrue(new String(resultPdfBytes, 0, 4).equals("%PDF"));
 
-		// --- 4. Extract text to verify header was stamped ---
 		Document checkDoc = new Document(new ByteArrayInputStream(resultPdfBytes));
 		TextAbsorber absorber = new TextAbsorber();
 		checkDoc.getPages().accept(absorber);
@@ -163,5 +150,30 @@ public class PdfServiceTest {
 		checkDoc.close();
 
 		assertTrue(extractedText.contains(headerText), "Header text should be present in the resulting PDF");
+	}
+
+	@Test
+	void testAddFooter() throws Exception {
+		byte[] pdfBytes = createMockPdf();
+		UploadedFile uploadedFile = mock(UploadedFile.class);
+		when(uploadedFile.getFileName()).thenReturn("a.pdf");
+		when(uploadedFile.getInputStream()).thenReturn(new ByteArrayInputStream(pdfBytes));
+
+		String footerText = "FOOTER_TEST";
+		DefaultStreamedContent result = pdfService.addFooter(uploadedFile, footerText);
+
+		assertNotNull(result);
+		assertEquals("a_with_footer.pdf", result.getName());
+
+		byte[] resultPdfBytes = result.getStream().get().readAllBytes();
+		assertTrue(new String(resultPdfBytes, 0, 4).equals("%PDF"));
+
+		Document checkDoc = new Document(new ByteArrayInputStream(resultPdfBytes));
+		TextAbsorber absorber = new TextAbsorber();
+		checkDoc.getPages().accept(absorber);
+		String extractedText = absorber.getText();
+		checkDoc.close();
+
+		assertTrue(extractedText.contains(footerText), "Footer text should be present in the resulting PDF");
 	}
 }

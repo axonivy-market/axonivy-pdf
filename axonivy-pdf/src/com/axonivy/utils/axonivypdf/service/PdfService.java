@@ -75,6 +75,27 @@ public class PdfService {
 
 		return buildFileStream(output.toByteArray(), updateFileWithHeaderName(originalFileName));
 	}
+	
+	public DefaultStreamedContent addFooter(UploadedFile uploadedFile, String footerText) throws IOException {
+		String originalFileName = uploadedFile.getFileName();
+		InputStream input = uploadedFile.getInputStream();
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+
+		Document pdfDocument = new Document(input);
+
+		TextStamp textStamp = new TextStamp(footerText);
+		textStamp.setBottomMargin(10);
+		textStamp.setHorizontalAlignment(HorizontalAlignment.Center);
+		textStamp.setVerticalAlignment(VerticalAlignment.Bottom);
+
+		for (Page page : pdfDocument.getPages()) {
+			page.addStamp(textStamp);
+		}
+		pdfDocument.save(output);
+		pdfDocument.close();
+
+		return buildFileStream(output.toByteArray(), updateFileWithFooterName(originalFileName));
+	}
 
 	public DefaultStreamedContent merge(UploadedFiles uploadedFiles) throws IOException {
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
