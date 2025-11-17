@@ -1,6 +1,5 @@
 package com.axonivy.utils.axonivypdf.demo.managedBean;
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
@@ -19,7 +18,6 @@ import java.util.zip.ZipOutputStream;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.view.ViewScoped;
-import javax.imageio.ImageIO;
 
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.model.DefaultStreamedContent;
@@ -27,38 +25,24 @@ import org.primefaces.model.file.UploadedFile;
 import org.primefaces.model.file.UploadedFiles;
 
 import com.aspose.pdf.Annotation;
-import com.aspose.pdf.Color;
 import com.aspose.pdf.Document;
-import com.aspose.pdf.FontRepository;
-import com.aspose.pdf.FontStyles;
 import com.aspose.pdf.HighlightAnnotation;
-import com.aspose.pdf.HorizontalAlignment;
 import com.aspose.pdf.HtmlSaveOptions;
-import com.aspose.pdf.Image;
 import com.aspose.pdf.ImageFormat;
 import com.aspose.pdf.ImagePlacement;
 import com.aspose.pdf.ImagePlacementAbsorber;
-import com.aspose.pdf.MarginInfo;
 import com.aspose.pdf.Page;
-import com.aspose.pdf.PageNumberStamp;
-import com.aspose.pdf.Rotation;
 import com.aspose.pdf.SaveFormat;
 import com.aspose.pdf.TextAbsorber;
 import com.aspose.pdf.TextFragment;
 import com.aspose.pdf.TextFragmentCollection;
-import com.aspose.pdf.TextStamp;
-import com.aspose.pdf.VerticalAlignment;
-import com.aspose.pdf.WatermarkArtifact;
 import com.aspose.pdf.XImage;
 import com.aspose.pdf.devices.JpegDevice;
-import com.aspose.pdf.facades.EncodingType;
-import com.aspose.pdf.facades.FontStyle;
-import com.aspose.pdf.facades.FormattedText;
-import com.aspose.pdf.facades.PdfFileEditor;
 import com.axonivy.utils.axonivypdf.demo.enums.FileExtension;
 import com.axonivy.utils.axonivypdf.demo.enums.SplitOption;
-import com.axonivy.utils.axonivypdf.demo.enums.TextExtractType;
 import com.axonivy.utils.axonivypdf.demo.exception.PdfOperationException;
+import com.axonivy.utils.axonivypdf.enums.RotateOption;
+import com.axonivy.utils.axonivypdf.enums.TextExtractType;
 import com.axonivy.utils.axonivypdf.service.PdfFactory;
 import com.axonivy.utils.axonivypdf.service.PdfService;
 
@@ -69,7 +53,7 @@ public class PdfFactoryBean {
 	private static final String DOT = ".";
 	private static final float DEFAULT_FONT_SIZE = 12;
 	private static final float DEFAULT_PAGE_NUMBER_FONT_SIZE = 14.0F;
-	private static final float DEFAULT_WATERMARK_FONT_SIZE = 72.0F;
+	private static final float DEFAULT_WATERMARK_FONT_SIZE = 36.0F;
 	private static final double DEFAULT_WATERMARK_OPACITY = 0.5;
 	private static final double DEFAULT_WATERMARK_ROTATION = 45;
 	private static final String EXTRACTED_TEXT = "extracted_text";
@@ -94,6 +78,7 @@ public class PdfFactoryBean {
 			+ FileExtension.PDF.getExtension();
 	private SplitOption splitOption = SplitOption.ALL;
 	private TextExtractType textExtractType = TextExtractType.ALL;
+	private RotateOption selectedRotateOption = RotateOption.ROTATE_90;
 	private Integer startPage;
 	private Integer endPage;
 	private String headerText = "HEADER";
@@ -102,6 +87,8 @@ public class PdfFactoryBean {
 	private UploadedFile uploadedFile;
 	private UploadedFiles uploadedFiles;
 	private DefaultStreamedContent fileForDownload;
+	private List<RotateOption> rotateOptions = Arrays.asList(RotateOption.ROTATE_90, RotateOption.ROTATE_180,
+			RotateOption.ROTATE_270, RotateOption.ROTATE_360);
 	private List<FileExtension> otherDocumentTypes = Arrays.asList(FileExtension.DOCX, FileExtension.XLSX,
 			FileExtension.PPTX, FileExtension.JPG, FileExtension.JPEG);
 	private FileExtension selectedFileExtension = FileExtension.DOCX;
@@ -149,92 +136,25 @@ public class PdfFactoryBean {
 		setFileForDownload(pdfService.addFooter(uploadedFile, footerText));
 	}
 
-	public void addWatermark() {
+	public void addWatermark() throws IOException {
 		if (uploadedFile == null) {
 			throw new PdfOperationException("No file uploaded. Please upload a workbook file first.");
 		}
-
-		String originalFileName = uploadedFile.getFileName();
-		try (InputStream input = uploadedFile.getInputStream();
-				ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-			Document pdfDocument = new Document(input);
-
-			FormattedText formattedText = new FormattedText(watermarkText, java.awt.Color.BLUE, FontStyle.TimesRoman,
-					EncodingType.Identity_h, true, DEFAULT_WATERMARK_FONT_SIZE);
-			WatermarkArtifact artifact = new WatermarkArtifact();
-			artifact.setText(formattedText);
-			artifact.setArtifactHorizontalAlignment(HorizontalAlignment.Center);
-			artifact.setArtifactVerticalAlignment(VerticalAlignment.Center);
-			artifact.setRotation(DEFAULT_WATERMARK_ROTATION);
-			artifact.setOpacity(DEFAULT_WATERMARK_OPACITY);
-			artifact.setBackground(false);
-
-			for (Page page : pdfDocument.getPages()) {
-				page.getArtifacts().add(artifact);
-			}
-			pdfDocument.save(output);
-			pdfDocument.close();
-
-			setFileForDownload(buildFileStream(output.toByteArray(), updateFileNameWithWatermark(originalFileName)));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		setFileForDownload(pdfService.addWatermark(uploadedFile, watermarkText));
 	}
 
-	public void rotatePages() {
+	public void rotatePages() throws IOException {
 		if (uploadedFile == null) {
 			throw new PdfOperationException("No file uploaded. Please upload a workbook file first.");
 		}
-
-		String originalFileName = uploadedFile.getFileName();
-		try (InputStream input = uploadedFile.getInputStream();
-				ByteArrayOutputStream output = new ByteArrayOutputStream();) {
-			Document pdfDocument = new Document(input);
-
-			for (Page page : pdfDocument.getPages()) {
-				page.setRotate(Rotation.on90);
-			}
-			pdfDocument.save(output);
-			pdfDocument.close();
-
-			setFileForDownload(buildFileStream(output.toByteArray(), updateRotatedFileName(originalFileName)));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		setFileForDownload(pdfService.rotatePages(uploadedFile, selectedRotateOption.getValue()));
 	}
 
-	public void addPageNumbers() {
+	public void addPageNumbers() throws IOException {
 		if (uploadedFile == null) {
 			throw new PdfOperationException("No file uploaded. Please upload a workbook file first.");
 		}
-
-		String originalFileName = uploadedFile.getFileName();
-		try (InputStream input = uploadedFile.getInputStream();
-				ByteArrayOutputStream output = new ByteArrayOutputStream();) {
-			Document pdfDocument = new Document(input);
-
-			PageNumberStamp pageNumberStamp = new PageNumberStamp();
-			pageNumberStamp.setBackground(false);
-			pageNumberStamp.setFormat("Page # of " + pdfDocument.getPages().size());
-			pageNumberStamp.setBottomMargin(10);
-			pageNumberStamp.setHorizontalAlignment(HorizontalAlignment.Center);
-			pageNumberStamp.setStartingNumber(1);
-
-			pageNumberStamp.getTextState().setFont(FontRepository.findFont(TIMES_NEW_ROMAN_FONT));
-			pageNumberStamp.getTextState().setFontSize(DEFAULT_PAGE_NUMBER_FONT_SIZE);
-			pageNumberStamp.getTextState().setFontStyle(FontStyles.Bold);
-			pageNumberStamp.getTextState().setForegroundColor(Color.getBlack());
-
-			for (Page page : pdfDocument.getPages()) {
-				page.addStamp(pageNumberStamp);
-			}
-			pdfDocument.save(output);
-			pdfDocument.close();
-
-			setFileForDownload(buildFileStream(output.toByteArray(), updateFileWithPageNumberName(originalFileName)));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		setFileForDownload(pdfService.addPageNumbers(uploadedFile));
 	}
 
 	public void extractHighlightedText(String originalFileName, InputStream input, ByteArrayOutputStream textStream,
@@ -285,16 +205,19 @@ public class PdfFactoryBean {
 		if (uploadedFile == null) {
 			throw new PdfOperationException("No file uploaded. Please upload a workbook file first.");
 		}
-
 		String originalFileName = uploadedFile.getFileName();
 
 		try (InputStream input = uploadedFile.getInputStream();
 				ByteArrayOutputStream textStream = new ByteArrayOutputStream();
 				OutputStreamWriter writer = new OutputStreamWriter(textStream, StandardCharsets.UTF_8)) {
 			if (TextExtractType.ALL.equals(textExtractType)) {
-				extractAllText(originalFileName, input, textStream, writer);
+				DefaultStreamedContent result = pdfService.extractAllText(originalFileName, input, textStream, writer,
+						textExtractType);
+				setFileForDownload(result);
 			} else {
-				extractHighlightedText(originalFileName, input, textStream, writer);
+				DefaultStreamedContent result = pdfService.extractHighlightedText(originalFileName, input, textStream,
+						writer, textExtractType);
+				setFileForDownload(result);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -666,5 +589,21 @@ public class PdfFactoryBean {
 
 	public void setWatermarkText(String watermarkText) {
 		this.watermarkText = watermarkText;
+	}
+
+	public RotateOption getSelectedRotateOption() {
+		return selectedRotateOption;
+	}
+
+	public void setSelectedRotateOption(RotateOption selectedRotateOption) {
+		this.selectedRotateOption = selectedRotateOption;
+	}
+
+	public List<RotateOption> getRotateOptions() {
+		return rotateOptions;
+	}
+
+	public void setRotateOptions(List<RotateOption> rotateOptions) {
+		this.rotateOptions = rotateOptions;
 	}
 }

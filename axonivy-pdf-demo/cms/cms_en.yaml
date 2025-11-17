@@ -25,8 +25,11 @@ Dialogs:
               Header: 'Axon Ivy Pdf Demo: Upload PDF file and extract images'
               Title: Extract images from PDF
             ExtractTextFromPdf:
+              ExtractAllText: Extract all text
+              ExtractOnlyHighlightedText: Extract only highlighted text
               ExtractTextAndDownload: Extract text and download
               Header: 'Axon Ivy Pdf Demo: Upload PDF file and extract text'
+              SelectExtractCriteria: Select extract criteria
               Title: Extract text from PDF
             MergePdfFiles:
               Header: 'Axon Ivy Pdf Demo: Upload .pdf file(s) and merge into 1 pdf file'
@@ -47,6 +50,7 @@ Dialogs:
               HeaderText: Header text
               RotatePages: Rotate pages
               RotatePagesAndDownload: Rotate pages and download
+              SelectRotateDegree: Select rotate degree
               Title: PDF Pages Operations
               WatermarkText: Watermark text
             SplitPdf:

@@ -3,7 +3,9 @@ package com.axonivy.utils.axonivypdf.test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.awt.Color;
@@ -13,6 +15,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -26,8 +30,15 @@ import org.primefaces.model.file.UploadedFile;
 import org.primefaces.model.file.UploadedFiles;
 
 import com.aspose.pdf.Document;
+import com.aspose.pdf.HighlightAnnotation;
 import com.aspose.pdf.License;
+import com.aspose.pdf.Page;
+import com.aspose.pdf.Rectangle;
+import com.aspose.pdf.Rotation;
 import com.aspose.pdf.TextAbsorber;
+import com.aspose.pdf.TextFragment;
+import com.aspose.pdf.TextFragmentAbsorber;
+import com.axonivy.utils.axonivypdf.enums.TextExtractType;
 import com.axonivy.utils.axonivypdf.service.PdfFactory;
 import com.axonivy.utils.axonivypdf.service.PdfService;
 
@@ -48,7 +59,6 @@ public class PdfServiceTest {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		Document pdf = new Document();
 		pdf.getPages().add();
-		pdf.getPages().insert(2);
 		pdf.save(out);
 		pdf.close();
 		return out.toByteArray();
@@ -59,6 +69,41 @@ public class PdfServiceTest {
 		when(file.getFileName()).thenReturn(name);
 		when(file.getInputStream()).thenReturn(new ByteArrayInputStream(data));
 		return file;
+	}
+
+	private byte[] createMockPdfWithHighlightedText() throws Exception {
+		Document doc = new Document();
+		Page page = doc.getPages().add();
+
+		// Add text to page
+		TextFragment tf = new TextFragment("Hello highlighted world");
+		page.getParagraphs().add(tf);
+
+		// Add highlight annotation covering the text
+		HighlightAnnotation ha = new HighlightAnnotation(page, new Rectangle(100, 700, 300, 720));
+		ha.setColor(com.aspose.pdf.Color.getBlue());
+		ha.setTitle("Test");
+		ha.setSubject("Highlight");
+
+		page.getAnnotations().add(ha);
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		doc.save(baos);
+		doc.close();
+		return baos.toByteArray();
+	}
+
+	private byte[] createMockPdfWithPlainText() throws Exception {
+		Document doc = new Document();
+		Page page = doc.getPages().add();
+
+		page.getParagraphs().add(new TextFragment("Line A"));
+		page.getParagraphs().add(new TextFragment("Line B"));
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		doc.save(baos);
+		doc.close();
+		return baos.toByteArray();
 	}
 
 	@Test
@@ -175,5 +220,123 @@ public class PdfServiceTest {
 		checkDoc.close();
 
 		assertTrue(extractedText.contains(footerText), "Footer text should be present in the resulting PDF");
+	}
+
+	@Test
+	void testAddWatermark() throws Exception {
+		byte[] pdfBytes = createMockPdf();
+		UploadedFile uploadedFile = mock(UploadedFile.class);
+		when(uploadedFile.getFileName()).thenReturn("a.pdf");
+		when(uploadedFile.getInputStream()).thenReturn(new ByteArrayInputStream(pdfBytes));
+
+		String watermarkText = "WATERMARK_TEST";
+		DefaultStreamedContent result = pdfService.addWatermark(uploadedFile, watermarkText);
+
+		assertNotNull(result);
+		assertEquals("a_with_watermark.pdf", result.getName());
+
+		byte[] resultPdfBytes = result.getStream().get().readAllBytes();
+		assertTrue(new String(resultPdfBytes, 0, 4).equals("%PDF"));
+
+		Document checkDoc = new Document(new ByteArrayInputStream(resultPdfBytes));
+		TextAbsorber absorber = new TextAbsorber();
+		checkDoc.getPages().accept(absorber);
+		String extractedText = absorber.getText();
+		checkDoc.close();
+
+		assertTrue(extractedText.contains(watermarkText), "Watermark text should be present in the resulting PDF");
+	}
+
+	@Test
+	void testRotatePages() throws Exception {
+		byte[] pdfBytes = createMockPdf();
+		UploadedFile uploadedFile = mock(UploadedFile.class);
+		when(uploadedFile.getFileName()).thenReturn("a.pdf");
+		when(uploadedFile.getInputStream()).thenReturn(new ByteArrayInputStream(pdfBytes));
+
+		DefaultStreamedContent result = pdfService.rotatePages(uploadedFile, Rotation.on90);
+
+		assertNotNull(result);
+		assertEquals("a_rotated.pdf", result.getName());
+
+		byte[] resultPdfBytes = result.getStream().get().readAllBytes();
+		assertTrue(new String(resultPdfBytes, 0, 4).equals("%PDF"));
+
+		Document rotatedDoc = new Document(new ByteArrayInputStream(resultPdfBytes));
+		for (Page page : rotatedDoc.getPages()) {
+			assertEquals(Rotation.on90, page.getRotate(), "Page rotation should match the requested rotation");
+		}
+		rotatedDoc.close();
+	}
+
+	@Test
+	void testAddPageNumbers() throws Exception {
+		Document doc = new Document();
+		for (int i = 0; i < 3; i++) {
+			doc.getPages().add();
+		}
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		doc.save(baos);
+		doc.close();
+
+		UploadedFile uploadedFile = mock(UploadedFile.class);
+		when(uploadedFile.getFileName()).thenReturn("a.pdf");
+		when(uploadedFile.getInputStream()).thenReturn(new ByteArrayInputStream(baos.toByteArray()));
+
+		DefaultStreamedContent result = pdfService.addPageNumbers(uploadedFile);
+
+		assertNotNull(result);
+		assertEquals("a_numbered.pdf", result.getName());
+
+		byte[] resultPdfBytes = result.getStream().get().readAllBytes();
+		assertTrue(new String(resultPdfBytes, 0, 4).equals("%PDF"));
+
+		Document pdfWithNumbers = new Document(new ByteArrayInputStream(resultPdfBytes));
+		int totalPages = pdfWithNumbers.getPages().size();
+
+		for (int pageNum = 1; pageNum <= totalPages; pageNum++) {
+			String expectedText = "Page " + pageNum + " of " + totalPages;
+			TextFragmentAbsorber absorber = new TextFragmentAbsorber(expectedText);
+
+			pdfWithNumbers.getPages().get_Item(pageNum).accept(absorber);
+
+			int found = absorber.getTextFragments().size();
+			assertTrue(found > 0, "Expected page number text on page " + pageNum);
+		}
+		pdfWithNumbers.close();
+	}
+
+	@Test
+	void testExtractHighlightedText() throws Exception {
+		InputStream inputStream = getClass().getClassLoader().getResourceAsStream("PDF_with_highlighted_text.pdf");
+		ByteArrayOutputStream textStream = new ByteArrayOutputStream();
+		OutputStreamWriter writer = new OutputStreamWriter(textStream, StandardCharsets.UTF_8);
+
+		DefaultStreamedContent result = pdfService.extractHighlightedText("PDF_with_highlighted_text.pdf", inputStream,
+				textStream, writer, TextExtractType.HIGHLIGHTED);
+
+		assertNotNull(result);
+		assertEquals("PDF_with_highlighted_text_extracted_highlighted_text.txt", result.getName());
+
+		Ivy.log().error(textStream.toString());
+		String extracted = textStream.toString(StandardCharsets.UTF_8);
+		assertTrue(extracted.contains("This line of this document is highlighted for testing purpose."));
+	}
+
+	@Test
+	void testExtractAllText() throws Exception {
+		InputStream inputStream = getClass().getClassLoader().getResourceAsStream("PDF_with_plain_text.pdf");
+		ByteArrayOutputStream textStream = new ByteArrayOutputStream();
+		OutputStreamWriter writer = new OutputStreamWriter(textStream, StandardCharsets.UTF_8);
+
+		DefaultStreamedContent result = pdfService.extractAllText("PDF_with_plain_text.pdf", inputStream, textStream,
+				writer, TextExtractType.ALL);
+
+		assertNotNull(result);
+		assertEquals("PDF_with_plain_text_extracted_text.txt", result.getName());
+
+		Ivy.log().error(textStream.toString());
+		String extracted = textStream.toString(StandardCharsets.UTF_8);
+		assertTrue(extracted.contains("This is a sample PDF with plain text."));
 	}
 }
