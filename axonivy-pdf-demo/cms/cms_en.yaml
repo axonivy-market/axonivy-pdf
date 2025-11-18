@@ -54,11 +54,13 @@ Dialogs:
               Title: PDF Pages Operations
               WatermarkText: Watermark text
             SplitPdf:
+              EndPage: End page
               Header: 'Axon Ivy Pdf Demo: Upload .pdf file and split into multiple files'
               SelectSplitCriteria: Select split criteria
               SplitAndDownload: Split and download
               SplitByRange: Split by page range
               SplitIntoSinglePages: Split into single-page files
+              StartPage: Start page
               Title: Split PDF
 Processes:
   ConvertHtmlToPdf:

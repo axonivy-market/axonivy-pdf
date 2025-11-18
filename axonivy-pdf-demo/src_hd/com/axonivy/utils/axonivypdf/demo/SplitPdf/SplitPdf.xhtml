@@ -30,12 +30,14 @@
         </h:panelGroup>
         <p:panelGrid id="range-panel" columns="2"
           style="display: #{pdfFactoryBean.shouldDisplayRangePanel() ? 'block' : 'none'}">
-          <p:outputLabel for="start" value="Start Page" />
+          <p:outputLabel for="start"
+            value="#{ivy.cms.co('/Dialogs/com/axonivy/utils/axonivypdf/demo/SplitPdf/StartPage')}" />
           <p:inputText type="number" id="start"
             value="#{pdfFactoryBean.startPage}">
           </p:inputText>
 
-          <p:outputLabel for="end" value="End Page" />
+          <p:outputLabel for="end"
+            value="#{ivy.cms.co('/Dialogs/com/axonivy/utils/axonivypdf/demo/SplitPdf/EndPage')}" />
           <p:inputText type="number" id="end"
             value="#{pdfFactoryBean.endPage}" />
         </p:panelGrid>
