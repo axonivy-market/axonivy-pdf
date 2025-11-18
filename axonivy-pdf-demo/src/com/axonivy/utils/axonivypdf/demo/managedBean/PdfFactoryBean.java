@@ -224,43 +224,11 @@ public class PdfFactoryBean {
 		}
 	}
 
-	public void extractImagesFromPdf() {
+	public void extractImagesFromPdf() throws IOException {
 		if (uploadedFile == null) {
 			throw new PdfOperationException("No file uploaded. Please upload a workbook file first.");
 		}
-
-		try (InputStream input = uploadedFile.getInputStream();) {
-			String originalFileName = uploadedFile.getFileName();
-			Document pdfDocument = new Document(input);
-			Path tempDir = Files.createTempDirectory(TEMP_ZIP_FILE_NAME);
-			int imageCount = 1;
-			int pageCount = 1;
-
-			for (Page page : pdfDocument.getPages()) {
-				ImagePlacementAbsorber imageAbsorber = new ImagePlacementAbsorber();
-				page.accept(imageAbsorber);
-
-				for (ImagePlacement ip : imageAbsorber.getImagePlacements()) {
-					XImage image = ip.getImage();
-
-					try (ByteArrayOutputStream imageStream = new ByteArrayOutputStream()) {
-						image.save(imageStream, ImageFormat.Png);
-						Path imageFile = tempDir.resolve(String.format(IMAGE_NAME_PATTERN,
-								StringUtils.substringBeforeLast(originalFileName, DOT), pageCount, imageCount));
-						Files.write(imageFile, imageStream.toByteArray());
-						imageCount++;
-					}
-				}
-				pageCount++;
-			}
-
-			byte[] zipBytes = Files.readAllBytes(zipDirectory(tempDir, TEMP_ZIP_FILE_NAME));
-			setFileForDownload(buildFileStream(zipBytes, updateImageZipName(originalFileName)));
-
-			pdfDocument.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		setFileForDownload(pdfService.extractImagesFromPdf(uploadedFile));
 	}
 
 	public void convertPdfToImagesZip(Document pdfDocument, String originalFileName, String extention)

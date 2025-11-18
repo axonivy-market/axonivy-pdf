@@ -3,10 +3,16 @@ package com.axonivy.utils.axonivypdf.service;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
 
@@ -23,6 +29,9 @@ import com.aspose.pdf.FontStyles;
 import com.aspose.pdf.HighlightAnnotation;
 import com.aspose.pdf.HorizontalAlignment;
 import com.aspose.pdf.Image;
+import com.aspose.pdf.ImageFormat;
+import com.aspose.pdf.ImagePlacement;
+import com.aspose.pdf.ImagePlacementAbsorber;
 import com.aspose.pdf.MarginInfo;
 import com.aspose.pdf.Page;
 import com.aspose.pdf.PageNumberStamp;
@@ -33,6 +42,7 @@ import com.aspose.pdf.TextFragmentCollection;
 import com.aspose.pdf.TextStamp;
 import com.aspose.pdf.VerticalAlignment;
 import com.aspose.pdf.WatermarkArtifact;
+import com.aspose.pdf.XImage;
 import com.aspose.pdf.facades.EncodingType;
 import com.aspose.pdf.facades.FontStyle;
 import com.aspose.pdf.facades.FormattedText;
@@ -223,6 +233,65 @@ public class PdfService {
 		pdfDocument.close();
 
 		return buildFileStream(textStream.toByteArray(), updateTxtFileName(originalFileName, textExtractType));
+	}
+
+	public DefaultStreamedContent extractImagesFromPdf(UploadedFile uploadedFile) throws IOException {
+		String originalFileName = uploadedFile.getFileName();
+		InputStream input = uploadedFile.getInputStream();
+		Document pdfDocument = new Document(input);
+		
+		Path tempDir = Files.createTempDirectory(TEMP_ZIP_FILE_NAME);
+		int imageCount = 1;
+		int pageCount = 1;
+
+		for (Page page : pdfDocument.getPages()) {
+			ImagePlacementAbsorber imageAbsorber = new ImagePlacementAbsorber();
+			page.accept(imageAbsorber);
+
+			for (ImagePlacement ip : imageAbsorber.getImagePlacements()) {
+				XImage image = ip.getImage();
+
+				try (ByteArrayOutputStream imageStream = new ByteArrayOutputStream()) {
+					image.save(imageStream, ImageFormat.Png);
+					Path imageFile = tempDir.resolve(String.format(IMAGE_NAME_PATTERN,
+							StringUtils.substringBeforeLast(originalFileName, DOT), pageCount, imageCount));
+					Files.write(imageFile, imageStream.toByteArray());
+					imageCount++;
+				}
+			}
+			pageCount++;
+		}
+
+		byte[] zipBytes = Files.readAllBytes(zipDirectory(tempDir, TEMP_ZIP_FILE_NAME));
+
+		pdfDocument.close();
+
+		return buildFileStream(zipBytes, updateImageZipName(originalFileName));
+	}
+
+	private Path zipDirectory(Path directory, String prefix) throws IOException {
+		Path zipPath = Files.createTempFile(prefix, FileExtension.ZIP.getExtension());
+
+		try (FileOutputStream fos = new FileOutputStream(zipPath.toFile());
+				ZipOutputStream zos = new ZipOutputStream(fos)) {
+
+			Files.list(directory).forEach(path -> {
+				try (InputStream fis = Files.newInputStream(path)) {
+					ZipEntry zipEntry = new ZipEntry(path.getFileName().toString());
+					zos.putNextEntry(zipEntry);
+
+					byte[] buffer = new byte[1024];
+					int length;
+					while ((length = fis.read(buffer)) > 0) {
+						zos.write(buffer, 0, length);
+					}
+					zos.closeEntry();
+				} catch (IOException e) {
+					throw new UncheckedIOException(e);
+				}
+			});
+		}
+		return zipPath;
 	}
 
 	public DefaultStreamedContent merge(UploadedFiles uploadedFiles) throws IOException {

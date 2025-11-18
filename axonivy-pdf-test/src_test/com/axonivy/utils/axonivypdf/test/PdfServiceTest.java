@@ -18,6 +18,8 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
@@ -314,11 +316,11 @@ public class PdfServiceTest {
 
 		DefaultStreamedContent result = pdfService.extractHighlightedText("PDF_with_highlighted_text.pdf", inputStream,
 				textStream, writer, TextExtractType.HIGHLIGHTED);
+		inputStream.close();
 
 		assertNotNull(result);
 		assertEquals("PDF_with_highlighted_text_extracted_highlighted_text.txt", result.getName());
 
-		Ivy.log().error(textStream.toString());
 		String extracted = textStream.toString(StandardCharsets.UTF_8);
 		assertTrue(extracted.contains("This line of this document is highlighted for testing purpose."));
 	}
@@ -329,14 +331,52 @@ public class PdfServiceTest {
 		ByteArrayOutputStream textStream = new ByteArrayOutputStream();
 		OutputStreamWriter writer = new OutputStreamWriter(textStream, StandardCharsets.UTF_8);
 
-		DefaultStreamedContent result = pdfService.extractAllText("PDF_with_plain_text.pdf", inputStream, textStream,
-				writer, TextExtractType.ALL);
+		DefaultStreamedContent result = pdfService.extractAllText("PDF_with_plain_text.pdf", inputStream,
+				textStream, writer, TextExtractType.ALL);
+		inputStream.close();
 
 		assertNotNull(result);
 		assertEquals("PDF_with_plain_text_extracted_text.txt", result.getName());
 
-		Ivy.log().error(textStream.toString());
 		String extracted = textStream.toString(StandardCharsets.UTF_8);
 		assertTrue(extracted.contains("This is a sample PDF with plain text."));
+	}
+
+	@Test
+	void testExtractImagesFromPdf() throws Exception {
+		InputStream inputStream = getClass().getClassLoader().getResourceAsStream("PDF_with_images.pdf");
+
+		byte[] pdfBytes = inputStream.readAllBytes();
+		inputStream.close();
+
+		UploadedFile uploadedFile = mock(UploadedFile.class);
+		when(uploadedFile.getFileName()).thenReturn("PDF_with_images.pdf");
+		when(uploadedFile.getInputStream()).thenReturn(new ByteArrayInputStream(pdfBytes));
+
+		DefaultStreamedContent result = pdfService.extractImagesFromPdf(uploadedFile);
+
+		assertNotNull(result);
+		assertNotNull(result.getStream());
+
+		ByteArrayInputStream zipBytes = new ByteArrayInputStream(result.getStream().get().readAllBytes());
+		ZipInputStream zis = new ZipInputStream(zipBytes);
+
+		boolean foundPng = false;
+		int totalFiles = 0;
+
+		ZipEntry entry;
+		while ((entry = zis.getNextEntry()) != null) {
+			totalFiles++;
+			if (entry.getName().toLowerCase().endsWith(".png")) {
+				foundPng = true;
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				zis.transferTo(bos);
+				assertTrue(bos.size() > 50);
+			}
+		}
+
+		zis.close();
+		assertTrue(totalFiles > 0);
+		assertTrue(foundPng);
 	}
 }
