@@ -73,9 +73,9 @@
           value="#{ivy.cms.co('/Dialogs/com/axonivy/utils/axonivypdf/demo/PageOperations/AddFooterAndDownload')}"
           ajax="false" actionListener="#{pdfFactoryBean.addFooter}"
           icon="pi pi-download"
-          styleClass="mt-3 ui-button-outlined block">
-          <p:fileDownload value="#{pdfFactoryBean.fileForDownload}"
-            onclick="PrimeFaces.monitorDownload(startDownload, stopDownload);" />
+          styleClass="mt-3 ui-button-outlined block"
+          onclick="PrimeFaces.monitorDownload(startDownload, stopDownload);">
+          <p:fileDownload value="#{pdfFactoryBean.fileForDownload}" />
         </p:commandButton>
 
         <h2>#{ivy.cms.co('/Dialogs/com/axonivy/utils/axonivypdf/demo/PageOperations/AddWatermark')}</h2>
