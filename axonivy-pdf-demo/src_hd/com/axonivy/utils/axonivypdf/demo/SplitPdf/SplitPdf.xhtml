@@ -29,7 +29,7 @@
           </p:selectOneMenu>
         </h:panelGroup>
         <p:panelGrid id="range-panel" columns="2"
-          style="display: #{pdfFactoryBean.splitOption eq 'RANGE' ? 'block' : 'none'}">
+          style="display: #{pdfFactoryBean.shouldDisplayRangePanel() ? 'block' : 'none'}">
           <p:outputLabel for="start" value="Start Page" />
           <p:inputText type="number" id="start"
             value="#{pdfFactoryBean.startPage}">

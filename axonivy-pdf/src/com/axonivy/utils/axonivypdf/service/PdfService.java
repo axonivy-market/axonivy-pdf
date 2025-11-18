@@ -49,9 +49,9 @@ import com.aspose.pdf.facades.EncodingType;
 import com.aspose.pdf.facades.FontStyle;
 import com.aspose.pdf.facades.FormattedText;
 import com.aspose.pdf.facades.PdfFileEditor;
-import com.axonivy.utils.axonivypdf.AxonivyPdfException;
 import com.axonivy.utils.axonivypdf.enums.FileExtension;
 import com.axonivy.utils.axonivypdf.enums.TextExtractType;
+import com.axonivy.utils.axonivypdf.exception.AxonivyPdfException;
 
 public class PdfService {
   private static final String DOT = ".";

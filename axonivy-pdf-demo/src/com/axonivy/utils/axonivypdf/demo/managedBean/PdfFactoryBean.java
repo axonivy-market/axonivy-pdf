@@ -17,11 +17,11 @@ import org.primefaces.model.file.UploadedFile;
 import org.primefaces.model.file.UploadedFiles;
 
 import com.aspose.pdf.Document;
-import com.axonivy.utils.axonivypdf.AxonivyPdfException;
 import com.axonivy.utils.axonivypdf.enums.FileExtension;
 import com.axonivy.utils.axonivypdf.enums.RotateOption;
 import com.axonivy.utils.axonivypdf.enums.SplitOption;
 import com.axonivy.utils.axonivypdf.enums.TextExtractType;
+import com.axonivy.utils.axonivypdf.exception.AxonivyPdfException;
 import com.axonivy.utils.axonivypdf.service.PdfFactory;
 import com.axonivy.utils.axonivypdf.service.PdfService;
 
@@ -181,8 +181,11 @@ public class PdfFactoryBean {
     if (uploadedFile == null) {
       throw new AxonivyPdfException("No file uploaded. Please upload a workbook file first.");
     }
-
     setFileForDownload(pdfService.convertHtmlToPdf(uploadedFile));
+  }
+
+  public boolean shouldDisplayRangePanel() {
+    return SplitOption.RANGE == splitOption;
   }
 
   public UploadedFile getUploadedFile() {

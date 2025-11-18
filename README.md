@@ -1,4 +1,4 @@
-# Axon Ivy PDF Utils
+# Axon Ivy PDF
 
 [![CI Build](https://github.com/axonivy-market/Axon Ivy PDF/actions/workflows/ci.yml/badge.svg)](https://github.com/axonivy-market/Axon Ivy PDF/actions/workflows/ci.yml)
 
