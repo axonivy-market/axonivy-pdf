@@ -9,6 +9,11 @@
   <ui:composition template="/layouts/frame-10-full-width.xhtml">
     <ui:define name="title">#{ivy.cms.co('/Dialogs/com/axonivy/utils/axonivypdf/demo/MergePdfFiles/MergePdfFiles')}</ui:define>
     <ui:define name="content">
+      <p:dialog modal="true" widgetVar="download-status-dialog"
+        header="Status" draggable="false" closable="false"
+        resizable="false">
+        <i class="pi pi-spinner pi-spin" style="font-size: 3rem"></i>
+      </p:dialog>
       <h2>#{ivy.cms.co('/Dialogs/com/axonivy/utils/axonivypdf/demo/MergePdfFiles/Header')}</h2>
       <h:form id="multiple" enctype="multipart/form-data">
         <p:fileUpload value="#{pdfFactoryBean.uploadedFiles}"
@@ -20,9 +25,24 @@
           value="#{ivy.cms.co('/Dialogs/com/axonivy/utils/axonivypdf/demo/MergePdfFiles/MergeAndDownload')}"
           ajax="false" actionListener="#{pdfFactoryBean.merge}"
           icon="pi pi-download"
-          styleClass="mt-3 ui-button-outlined block">
+          styleClass="mt-3 ui-button-outlined block"
+          onclick="PrimeFaces.monitorDownload(startDownload, stopDownload);">
           <p:fileDownload value="#{pdfFactoryBean.fileForDownload}" />
         </p:commandButton>
+
+        <script type="text/javascript">
+            function startDownload() {
+              var statusDialog = PF('download-status-dialog');
+              statusDialog.jq.removeAttr("download-status");
+              statusDialog.show();
+            }
+ 
+            function stopDownload() {
+              var statusDialog = PF('download-status-dialog');
+              statusDialog.jq.attr("download-status","completed");
+              statusDialog.hide();
+            }
+        </script>
       </h:form>
     </ui:define>
   </ui:composition>
