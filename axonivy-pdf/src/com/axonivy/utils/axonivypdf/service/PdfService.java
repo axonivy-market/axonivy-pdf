@@ -28,6 +28,7 @@ import com.aspose.pdf.FontRepository;
 import com.aspose.pdf.FontStyles;
 import com.aspose.pdf.HighlightAnnotation;
 import com.aspose.pdf.HorizontalAlignment;
+import com.aspose.pdf.HtmlSaveOptions;
 import com.aspose.pdf.Image;
 import com.aspose.pdf.ImageFormat;
 import com.aspose.pdf.ImagePlacement;
@@ -35,7 +36,7 @@ import com.aspose.pdf.ImagePlacementAbsorber;
 import com.aspose.pdf.MarginInfo;
 import com.aspose.pdf.Page;
 import com.aspose.pdf.PageNumberStamp;
-import com.aspose.pdf.Rotation;
+import com.aspose.pdf.SaveFormat;
 import com.aspose.pdf.TextAbsorber;
 import com.aspose.pdf.TextFragment;
 import com.aspose.pdf.TextFragmentCollection;
@@ -43,10 +44,12 @@ import com.aspose.pdf.TextStamp;
 import com.aspose.pdf.VerticalAlignment;
 import com.aspose.pdf.WatermarkArtifact;
 import com.aspose.pdf.XImage;
+import com.aspose.pdf.devices.JpegDevice;
 import com.aspose.pdf.facades.EncodingType;
 import com.aspose.pdf.facades.FontStyle;
 import com.aspose.pdf.facades.FormattedText;
 import com.aspose.pdf.facades.PdfFileEditor;
+import com.axonivy.utils.axonivypdf.AxonivyPdfException;
 import com.axonivy.utils.axonivypdf.enums.FileExtension;
 import com.axonivy.utils.axonivypdf.enums.TextExtractType;
 
@@ -62,7 +65,6 @@ public class PdfService {
 	private static final String TIMES_NEW_ROMAN_FONT = "Times New Roman";
 	private static final String TEMP_ZIP_FILE_NAME = "split_pages";
 	private static final String PDF_CONTENT_TYPE = "application/pdf";
-	private static final String SAMPLE_WATERMARK = "ASPOSE_WATERMARK";
 	private static final String SPLIT_PAGE_NAME_PATTERN = "%s_page_%d";
 	private static final String ROTATED_DOCUMENT_NAME_PATTERN = "%s_rotated" + FileExtension.PDF.getExtension();
 	private static final String DOCUMENT_WITH_HEADER_NAME_PATTERN = "%s_with_header" + FileExtension.PDF.getExtension();
@@ -236,11 +238,10 @@ public class PdfService {
 	}
 
 	public DefaultStreamedContent extractImagesFromPdf(UploadedFile uploadedFile) throws IOException {
+		Path tempDir = Files.createTempDirectory(TEMP_ZIP_FILE_NAME);
 		String originalFileName = uploadedFile.getFileName();
 		InputStream input = uploadedFile.getInputStream();
 		Document pdfDocument = new Document(input);
-		
-		Path tempDir = Files.createTempDirectory(TEMP_ZIP_FILE_NAME);
 		int imageCount = 1;
 		int pageCount = 1;
 
@@ -261,12 +262,61 @@ public class PdfService {
 			}
 			pageCount++;
 		}
-
 		byte[] zipBytes = Files.readAllBytes(zipDirectory(tempDir, TEMP_ZIP_FILE_NAME));
-
 		pdfDocument.close();
 
 		return buildFileStream(zipBytes, updateImageZipName(originalFileName));
+	}
+
+	public DefaultStreamedContent convertPdfToImagesZip(Document pdfDocument, String originalFileName, String extension)
+			throws IOException {
+		Path tempDir = Files.createTempDirectory(TEMP_ZIP_FILE_NAME);
+		int pageCount = 1;
+		for (Page pdfPage : pdfDocument.getPages()) {
+			JpegDevice jpegDevice = new JpegDevice();
+
+			try (ByteArrayOutputStream imageStream = new ByteArrayOutputStream()) {
+				jpegDevice.process(pdfPage, imageStream);
+
+				Path imageFile = tempDir.resolve(String.format(SPLIT_PAGE_NAME_PATTERN + extension,
+						StringUtils.substringBeforeLast(originalFileName, DOT), pageCount));
+				Files.write(imageFile, imageStream.toByteArray());
+			}
+
+			pageCount++;
+		}
+		byte[] zipBytes = Files.readAllBytes(zipDirectory(tempDir, TEMP_ZIP_FILE_NAME));
+		pdfDocument.close();
+
+		return buildFileStream(zipBytes, updateImageZipName(originalFileName));
+	}
+
+	public DefaultStreamedContent convertPdfToOtherDocumentTypes(UploadedFile uploadedFile, FileExtension fileExtension)
+			throws IOException {
+		String originalFileName = uploadedFile.getFileName();
+		InputStream input = uploadedFile.getInputStream();
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		Document pdfDocument = new Document(input);
+
+		if (FileExtension.DOCX == fileExtension) {
+			pdfDocument.save(output, SaveFormat.DocX);
+		} else if (FileExtension.XLSX == fileExtension) {
+			pdfDocument.save(output, SaveFormat.Excel);
+		} else if (FileExtension.PPTX == fileExtension) {
+			pdfDocument.save(output, SaveFormat.Pptx);
+		} else if (FileExtension.HTML == fileExtension) {
+			HtmlSaveOptions options = new HtmlSaveOptions();
+			options.setPartsEmbeddingMode(HtmlSaveOptions.PartsEmbeddingModes.EmbedAllIntoHtml);
+			options.setRasterImagesSavingMode(HtmlSaveOptions.RasterImagesSavingModes.AsPngImagesEmbeddedIntoSvg);
+			options.setSplitIntoPages(false);
+			pdfDocument.save(output, options);
+		} else if (FileExtension.JPG == fileExtension) {
+			return convertPdfToImagesZip(pdfDocument, originalFileName, FileExtension.JPG.getExtension());
+		} else if (FileExtension.JPEG == fileExtension) {
+			return convertPdfToImagesZip(pdfDocument, originalFileName, FileExtension.JPEG.getExtension());
+		}
+		pdfDocument.close();
+		return buildFileStream(output.toByteArray(), updateFileWithNewExtension(originalFileName, fileExtension));
 	}
 
 	private Path zipDirectory(Path directory, String prefix) throws IOException {
@@ -358,6 +408,59 @@ public class PdfService {
 		return buildFileStream(output.toByteArray(), updateFileWithPdfExtension(originalFileName));
 	}
 
+	public DefaultStreamedContent handleSplitIntoSinglePages(Document pdfDocument, String originalFileName)
+			throws IOException {
+		Path tempDir = Files.createTempDirectory(TEMP_ZIP_FILE_NAME);
+		int pageCount = 1;
+
+		for (Page pdfPage : pdfDocument.getPages()) {
+			Document newDoc = new Document();
+			newDoc.getPages().add(pdfPage);
+
+			Path pageFile = tempDir.resolve(String.format(SPLIT_PAGE_NAME_PATTERN + FileExtension.PDF.getExtension(),
+					StringUtils.substringBeforeLast(originalFileName, DOT), pageCount));
+			newDoc.save(pageFile.toString());
+			newDoc.close();
+			pageCount++;
+		}
+		return buildFileStream(Files.readAllBytes(zipDirectory(tempDir, TEMP_ZIP_FILE_NAME)),
+				updateFileWithZipExtension(originalFileName));
+	}
+
+	public DefaultStreamedContent handleSplitByRange(Document pdfDocument, String originalFileName, int startPage,
+			int endPage) throws IOException {
+		int pageSize = pdfDocument.getPages().size();
+		isInputInvalid(startPage, endPage, pageSize);
+		try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+			Document newDoc = new Document();
+
+			for (int i = startPage; i <= endPage; i++) {
+				Page pdfPage = pdfDocument.getPages().get_Item(i);
+				newDoc.getPages().add(pdfPage);
+			}
+
+			newDoc.save(output);
+			newDoc.close();
+			pdfDocument.close();
+			return buildFileStream(output.toByteArray(),
+					updateRangeSplitFileName(originalFileName, startPage, endPage));
+		}
+	}
+
+	private void isInputInvalid(int startPage, int endPage, int originalDocPageSize) {
+		if (startPage <= 0 || endPage <= 0) {
+			throw new AxonivyPdfException("Please enter a valid start page and end page");
+		}
+
+		if (endPage > originalDocPageSize || startPage > originalDocPageSize) {
+			throw new AxonivyPdfException("Please enter a valid start page and end page");
+		}
+
+		if (startPage > endPage) {
+			throw new AxonivyPdfException("Start page cannot be greater than end page");
+		}
+	}
+
 	private DefaultStreamedContent buildFileStream(byte[] byteContent, String fileName) {
 		return DefaultStreamedContent.builder().name(fileName).contentType(PDF_CONTENT_TYPE)
 				.stream(() -> new ByteArrayInputStream(byteContent)).build();
@@ -376,7 +479,7 @@ public class PdfService {
 		return String.format(SPLIT_PAGE_ZIP_NAME_PATTERN, getBaseName(originalFileName, "zip"));
 	}
 
-	private String updateRangeSplitFileWithZipExtension(String originalFileName, int startPage, int endPage) {
+	private String updateRangeSplitFileName(String originalFileName, int startPage, int endPage) {
 		return String.format(RANGE_SPLIT_FILE_NAME_PATTERN, getBaseName(originalFileName, "split_zip"), startPage,
 				endPage);
 	}

@@ -40,6 +40,7 @@ import com.aspose.pdf.Rotation;
 import com.aspose.pdf.TextAbsorber;
 import com.aspose.pdf.TextFragment;
 import com.aspose.pdf.TextFragmentAbsorber;
+import com.axonivy.utils.axonivypdf.enums.FileExtension;
 import com.axonivy.utils.axonivypdf.enums.TextExtractType;
 import com.axonivy.utils.axonivypdf.service.PdfFactory;
 import com.axonivy.utils.axonivypdf.service.PdfService;
@@ -296,8 +297,8 @@ public class PdfServiceTest {
 		ByteArrayOutputStream textStream = new ByteArrayOutputStream();
 		OutputStreamWriter writer = new OutputStreamWriter(textStream, StandardCharsets.UTF_8);
 
-		DefaultStreamedContent result = pdfService.extractAllText("PDF_with_plain_text.pdf", inputStream,
-				textStream, writer, TextExtractType.ALL);
+		DefaultStreamedContent result = pdfService.extractAllText("PDF_with_plain_text.pdf", inputStream, textStream,
+				writer, TextExtractType.ALL);
 		inputStream.close();
 
 		assertNotNull(result);
@@ -324,24 +325,149 @@ public class PdfServiceTest {
 		assertNotNull(result.getStream());
 
 		ByteArrayInputStream zipBytes = new ByteArrayInputStream(result.getStream().get().readAllBytes());
-		ZipInputStream zis = new ZipInputStream(zipBytes);
 
 		boolean foundPng = false;
 		int totalFiles = 0;
 
-		ZipEntry entry;
-		while ((entry = zis.getNextEntry()) != null) {
-			totalFiles++;
-			if (entry.getName().toLowerCase().endsWith(".png")) {
-				foundPng = true;
-				ByteArrayOutputStream bos = new ByteArrayOutputStream();
-				zis.transferTo(bos);
-				assertTrue(bos.size() > 50);
+		try (ZipInputStream zis = new ZipInputStream(zipBytes)) {
+			ZipEntry entry;
+			while ((entry = zis.getNextEntry()) != null) {
+				totalFiles++;
+				if (entry.getName().toLowerCase().endsWith(".png")) {
+					foundPng = true;
+					ByteArrayOutputStream bos = new ByteArrayOutputStream();
+					zis.transferTo(bos);
+					assertTrue(bos.size() > 50);
+				}
+			}
+		}
+		assertTrue(totalFiles > 0);
+		assertTrue(foundPng);
+	}
+
+	@Test
+	void testConvertPdfToImagesZip() throws IOException {
+		InputStream inputStream = getClass().getClassLoader().getResourceAsStream("PDF_with_2_pages.pdf");
+		Document pdfDocument = new Document(inputStream);
+		int pageCount = pdfDocument.getPages().size();
+
+		byte[] pdfBytes = inputStream.readAllBytes();
+		inputStream.close();
+
+		UploadedFile uploadedFile = mock(UploadedFile.class);
+		when(uploadedFile.getFileName()).thenReturn("PDF_with_2_pages.pdf");
+		when(uploadedFile.getInputStream()).thenReturn(new ByteArrayInputStream(pdfBytes));
+
+		String extension = ".jpg";
+		DefaultStreamedContent result = pdfService.convertPdfToImagesZip(pdfDocument, "PDF_with_2_pages.pdf",
+				extension);
+
+		assertNotNull(result);
+		assertNotNull(result.getStream());
+
+		ByteArrayInputStream zipBytes = new ByteArrayInputStream(result.getStream().get().readAllBytes());
+		int imageFileCount = 0;
+
+		try (ZipInputStream zis = new ZipInputStream(zipBytes)) {
+			ZipEntry entry;
+			while ((entry = zis.getNextEntry()) != null) {
+				assertTrue(entry.getName().endsWith(extension),
+						"ZIP entry must have correct extension: " + entry.getName());
+				imageFileCount++;
 			}
 		}
 
-		zis.close();
-		assertTrue(totalFiles > 0);
-		assertTrue(foundPng);
+		assertEquals(pageCount, imageFileCount, "Number of images in ZIP must equal number of pages in PDF");
+	}
+
+	private UploadedFile mockUploadedFile() throws Exception {
+		UploadedFile uploadedFile = mock(UploadedFile.class);
+		InputStream inputStream = getClass().getClassLoader().getResourceAsStream("PDF_with_2_pages.pdf");
+
+		when(uploadedFile.getFileName()).thenReturn("PDF_with_2_pages.pdf");
+		when(uploadedFile.getInputStream()).thenReturn(inputStream);
+
+		return uploadedFile;
+	}
+
+	private void testConversion(FileExtension extension) throws Exception {
+		UploadedFile uploadedFile = mockUploadedFile();
+
+		DefaultStreamedContent result = pdfService.convertPdfToOtherDocumentTypes(uploadedFile, extension);
+
+		assertNotNull(result, "Result should not be null");
+
+		try (InputStream inputStream = result.getStream().get()) {
+			byte[] bytes = inputStream.readAllBytes();
+			assertTrue(bytes.length > 0, "Converted file should not be empty");
+		}
+
+		assertTrue(result.getName().endsWith("." + extension.name().toLowerCase()),
+				"Filename should have the correct extension");
+	}
+
+	@Test
+	void testConvertPdfToDocx() throws Exception {
+		testConversion(FileExtension.DOCX);
+	}
+
+	@Test
+	void testConvertPdfToXlsx() throws Exception {
+		testConversion(FileExtension.XLSX);
+	}
+
+	@Test
+	void testConvertPdfToPptx() throws Exception {
+		testConversion(FileExtension.PPTX);
+	}
+
+	@Test
+	void testConvertPdfToHtml() throws Exception {
+		testConversion(FileExtension.HTML);
+	}
+
+	@Test
+	void testHandleSplitIntoSinglePages() throws Exception {
+		UploadedFile uploadedFile = mockUploadedFile();
+		String originalFileName = uploadedFile.getFileName();
+
+		try (InputStream inputStream = uploadedFile.getInputStream();
+				Document pdfDocument = new Document(inputStream)) {
+
+			DefaultStreamedContent result = pdfService.handleSplitIntoSinglePages(pdfDocument, originalFileName);
+
+			assertNotNull(result, "Resulting DefaultStreamedContent should not be null");
+			assertTrue(result.getName().endsWith(".zip"), "Result file should have a .zip extension");
+
+			try (InputStream zipInput = result.getStream().get()) {
+				byte[] zipBytes = zipInput.readAllBytes();
+				assertTrue(zipBytes.length > 0, "ZIP file should not be empty");
+			}
+		}
+	}
+
+	@Test
+	void testHandleSplitByRangeValid() throws Exception {
+		UploadedFile uploadedFile = mockUploadedFile();
+		String originalFileName = uploadedFile.getFileName();
+
+		try (InputStream inputStream = uploadedFile.getInputStream();
+				Document pdfDocument = new Document(inputStream)) {
+
+			int totalPages = pdfDocument.getPages().size();
+			int startPage = 1;
+			int endPage = Math.min(2, totalPages); // take first 2 pages
+
+			DefaultStreamedContent result = pdfService.handleSplitByRange(pdfDocument, originalFileName, startPage,
+					endPage);
+
+			assertNotNull(result, "Result should not be null");
+			assertTrue(result.getName().endsWith(".pdf"));
+
+			try (InputStream zipInput = result.getStream().get()) {
+				byte[] zipBytes = zipInput.readAllBytes();
+				assertTrue(zipBytes.length > 0, "ZIP content should not be empty");
+			}
+		}
 	}
 }
