@@ -73,41 +73,6 @@ public class PdfServiceTest {
 		return file;
 	}
 
-	private byte[] createMockPdfWithHighlightedText() throws Exception {
-		Document doc = new Document();
-		Page page = doc.getPages().add();
-
-		// Add text to page
-		TextFragment tf = new TextFragment("Hello highlighted world");
-		page.getParagraphs().add(tf);
-
-		// Add highlight annotation covering the text
-		HighlightAnnotation ha = new HighlightAnnotation(page, new Rectangle(100, 700, 300, 720));
-		ha.setColor(com.aspose.pdf.Color.getBlue());
-		ha.setTitle("Test");
-		ha.setSubject("Highlight");
-
-		page.getAnnotations().add(ha);
-
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		doc.save(baos);
-		doc.close();
-		return baos.toByteArray();
-	}
-
-	private byte[] createMockPdfWithPlainText() throws Exception {
-		Document doc = new Document();
-		Page page = doc.getPages().add();
-
-		page.getParagraphs().add(new TextFragment("Line A"));
-		page.getParagraphs().add(new TextFragment("Line B"));
-
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		doc.save(baos);
-		doc.close();
-		return baos.toByteArray();
-	}
-
 	@Test
 	void testMerge() throws Exception {
 		UploadedFiles uploadedFiles = mock(UploadedFiles.class);
