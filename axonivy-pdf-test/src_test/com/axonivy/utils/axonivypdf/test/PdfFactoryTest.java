@@ -24,58 +24,58 @@ import ch.ivyteam.ivy.environment.IvyTest;
 
 @IvyTest
 public class PdfFactoryTest {
-	@BeforeEach
-	void resetLicenseField() throws Exception {
-		var field = PdfFactory.class.getDeclaredField("license");
-		field.setAccessible(true);
-		field.set(null, null);
-	}
+  @BeforeEach
+  void resetLicenseField() throws Exception {
+    var field = PdfFactory.class.getDeclaredField("license");
+    field.setAccessible(true);
+    field.set(null, null);
+  }
 
-	@Test
-	void testLoadLicenseWithoutRealAsposeFile() throws Exception {
-		withMockedLicense((stream, mockedLicenses, mockedLicenseConstructor) -> {
-			PdfFactory.loadLicense();
-			PdfFactory.loadLicense();
-			mockedLicenses.verify(ThirdPartyLicenses::getDocumentFactoryLicense);
-			assertEquals(1, mockedLicenseConstructor.constructed().size());
-			verify(mockedLicenseConstructor.constructed().get(0)).setLicense(stream);
-		});
-	}
+  @Test
+  void testLoadLicenseWithoutRealAsposeFile() throws Exception {
+    withMockedLicense((stream, mockedLicenses, mockedLicenseConstructor) -> {
+      PdfFactory.loadLicense();
+      PdfFactory.loadLicense();
+      mockedLicenses.verify(ThirdPartyLicenses::getDocumentFactoryLicense);
+      assertEquals(1, mockedLicenseConstructor.constructed().size());
+      verify(mockedLicenseConstructor.constructed().get(0)).setLicense(stream);
+    });
+  }
 
-	@Test
-	void testGetCallsLoadLicenseAndReturnsValue() throws Exception {
-		withMockedLicense((stream, mockedThirdParty, mockedLicenseConstructor) -> {
-			Supplier<String> supplier = () -> "HelloWorld";
-			String result = PdfFactory.get(supplier);
-			assertEquals("HelloWorld", result);
-		});
-	}
+  @Test
+  void testGetCallsLoadLicenseAndReturnsValue() throws Exception {
+    withMockedLicense((stream, mockedThirdParty, mockedLicenseConstructor) -> {
+      Supplier<String> supplier = () -> "HelloWorld";
+      String result = PdfFactory.get(supplier);
+      assertEquals("HelloWorld", result);
+    });
+  }
 
-	@Test
-	void testRunCallsLoadLicenseAndExecutesRunnable() throws Exception {
-		withMockedLicense((stream, mockedThirdParty, mockedLicenseConstructor) -> {
-			final boolean[] executed = { false };
-			Runnable runnable = () -> executed[0] = true;
-			PdfFactory.run(runnable);
-			assertTrue(executed[0]);
-		});
-	}
+  @Test
+  void testRunCallsLoadLicenseAndExecutesRunnable() throws Exception {
+    withMockedLicense((stream, mockedThirdParty, mockedLicenseConstructor) -> {
+      final boolean[] executed = {false};
+      Runnable runnable = () -> executed[0] = true;
+      PdfFactory.run(runnable);
+      assertTrue(executed[0]);
+    });
+  }
 
-	@FunctionalInterface
-	private interface TestLogic {
-		void run(InputStream stream, MockedStatic<ThirdPartyLicenses> mockedThirdParty,
-				MockedConstruction<License> mockedLicenseCtor) throws Exception;
-	}
+  @FunctionalInterface
+  private interface TestLogic {
+    void run(InputStream stream, MockedStatic<ThirdPartyLicenses> mockedThirdParty,
+        MockedConstruction<License> mockedLicenseCtor) throws Exception;
+  }
 
-	@SuppressWarnings("resource")
-	private void withMockedLicense(TestLogic logic) throws Exception {
-		try (MockedStatic<ThirdPartyLicenses> mockedThirdParty = Mockito.mockStatic(ThirdPartyLicenses.class)) {
-			InputStream dummyStream = mock(InputStream.class);
-			mockedThirdParty.when(ThirdPartyLicenses::getDocumentFactoryLicense).thenReturn(dummyStream);
-			try (MockedConstruction<License> mockedLicenseConstructor = Mockito.mockConstruction(License.class,
-					(mock, context) -> doNothing().when(mock).setLicense(any(InputStream.class)))) {
-				logic.run(dummyStream, mockedThirdParty, mockedLicenseConstructor);
-			}
-		}
-	}
+  @SuppressWarnings("resource")
+  private void withMockedLicense(TestLogic logic) throws Exception {
+    try (MockedStatic<ThirdPartyLicenses> mockedThirdParty = Mockito.mockStatic(ThirdPartyLicenses.class)) {
+      InputStream dummyStream = mock(InputStream.class);
+      mockedThirdParty.when(ThirdPartyLicenses::getDocumentFactoryLicense).thenReturn(dummyStream);
+      try (MockedConstruction<License> mockedLicenseConstructor = Mockito.mockConstruction(License.class,
+          (mock, context) -> doNothing().when(mock).setLicense(any(InputStream.class)))) {
+        logic.run(dummyStream, mockedThirdParty, mockedLicenseConstructor);
+      }
+    }
+  }
 }
