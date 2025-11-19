@@ -12,16 +12,19 @@
   <artifactId>axonivy-pdf-demo</artifactId>
   <version>13.1.1-SNAPSHOT</version>
   <packaging>iar</packaging>
+  <properties>
+    <project.build.plugin.version>13.1.1</project.build.plugin.version>
+  </properties>
   <dependencies>
-    <dependency>
-      <groupId>com.axonivy.ivy.api</groupId>
-      <artifactId>ivy-api</artifactId>
-    </dependency>
     <dependency>
       <groupId>com.axonivy.utils.axonivypdf</groupId>
       <artifactId>axonivy-pdf</artifactId>
       <version>${project.version}</version>
       <type>iar</type>
+    </dependency>
+    <dependency>
+      <groupId>com.axonivy.ivy.api</groupId>
+      <artifactId>ivy-api</artifactId>
     </dependency>
   </dependencies>
   <repositories>
@@ -40,6 +43,15 @@
       <url>https://maven.axonivy.com</url>
     </repository>
   </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
+      <id>sonatype</id>
+      <url>https://central.sonatype.com/repository/maven-snapshots</url>
+    </pluginRepository>
+  </pluginRepositories>
   <build>
     <plugins>
       <plugin>

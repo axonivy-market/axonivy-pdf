@@ -11,12 +11,12 @@
   <groupId>com.axonivy.utils.axonivypdf</groupId>
   <artifactId>axonivy-pdf-test</artifactId>
   <version>13.1.1-SNAPSHOT</version>
-  <packaging>iar</packaging>
+  <packaging>iar-integration-test</packaging>
+  <properties>
+    <tester.version>13.1.1</tester.version>
+    <project.build.plugin.version>13.1.1</project.build.plugin.version>
+  </properties>
   <dependencies>
-     <dependency>
-      <groupId>com.axonivy.ivy.api</groupId>
-      <artifactId>ivy-api</artifactId>
-    </dependency>
     <dependency>
       <groupId>com.axonivy.utils.axonivypdf</groupId>
       <artifactId>axonivy-pdf</artifactId>
@@ -34,6 +34,10 @@
       <version>5.2.0</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.axonivy.ivy.api</groupId>
+      <artifactId>ivy-api</artifactId>
+    </dependency>
   </dependencies>
   <repositories>
     <repository>
@@ -47,16 +51,33 @@
       <snapshots>
         <updatePolicy>always</updatePolicy>
       </snapshots>
+      <id>sonatype</id>
+      <url>https://central.sonatype.com/repository/maven-snapshots</url>
+    </repository>
+    <repository>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
       <id>maven.axonivy.com</id>
       <url>https://maven.axonivy.com</url>
     </repository>
   </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
+      <id>sonatype</id>
+      <url>https://central.sonatype.com/repository/maven-snapshots</url>
+    </pluginRepository>
+  </pluginRepositories>
   <build>
     <testSourceDirectory>src_test</testSourceDirectory>
     <plugins>
       <plugin>
         <groupId>com.axonivy.ivy.ci</groupId>
         <artifactId>project-build-plugin</artifactId>
+        <extensions>true</extensions>
       </plugin>
     </plugins>
   </build>

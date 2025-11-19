@@ -295,7 +295,7 @@ public class PdfService {
     Document pdfDocument = new Document(input);
 
     if (FileExtension.DOCX == fileExtension) {
-      pdfDocument.save(output, SaveFormat.Doc);
+      pdfDocument.save(output, SaveFormat.DocX);
     } else if (FileExtension.XLSX == fileExtension) {
       pdfDocument.save(output, SaveFormat.Excel);
     } else if (FileExtension.PPTX == fileExtension) {
