@@ -32,6 +32,7 @@ import com.aspose.pdf.Document;
 import com.aspose.pdf.Font;
 import com.aspose.pdf.FontRepository;
 import com.aspose.pdf.HighlightAnnotation;
+import com.aspose.pdf.Image;
 import com.aspose.pdf.Page;
 import com.aspose.pdf.Position;
 import com.aspose.pdf.Rotation;
@@ -53,7 +54,7 @@ public class PdfServiceTest {
   private static final String HIGHLIGHTED_TEXT = "This line of this document is highlighted for testing purpose.";;
   private static final String NORMAL_TEXT =
       "This line of this document is normal and not highlighted for testing purpose.";
-  private static final String TIMES_NEW_ROMAN_FONT = "Times New Roman";
+  private static final String TIMES_NEW_ROMAN_FONT = "TimesRoman";
 
   @BeforeEach
   void setUp() throws Exception {
@@ -85,14 +86,14 @@ public class PdfServiceTest {
     byte[] imgBytes = imgOut.toByteArray();
 
     Page page1 = pdf.getPages().add();
-    com.aspose.pdf.Image pdfImg1 = new com.aspose.pdf.Image();
+    Image pdfImg1 = new Image();
     pdfImg1.setImageStream(new ByteArrayInputStream(imgBytes));
     pdfImg1.setFixHeight(TEST_IMAGE_FIX_HEIGHT);
     pdfImg1.setFixWidth(TEST_IMAGE_FIX_WIDTH);
     page1.getParagraphs().add(pdfImg1);
 
     Page page2 = pdf.getPages().add();
-    com.aspose.pdf.Image pdfImg2 = new com.aspose.pdf.Image();
+    Image pdfImg2 = new Image();
     pdfImg2.setImageStream(new ByteArrayInputStream(imgBytes));
     pdfImg2.setFixHeight(TEST_IMAGE_FIX_HEIGHT);
     pdfImg2.setFixWidth(TEST_IMAGE_FIX_WIDTH);
@@ -108,7 +109,7 @@ public class PdfServiceTest {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     Document doc = new Document();
 
-    Font font = FontRepository.findFont("TimesRoman");
+    Font font = FontRepository.findFont(TIMES_NEW_ROMAN_FONT);
 
     Page page1 = doc.getPages().add();
     TextFragment text1 = new TextFragment("This is page 1.");
@@ -152,7 +153,7 @@ public class PdfServiceTest {
     Document doc = new Document();
     Page page = doc.getPages().add();
 
-    Font font = FontRepository.findFont("TimesRoman");
+    Font font = FontRepository.findFont(TIMES_NEW_ROMAN_FONT);
 
     TextFragment normal = new TextFragment(NORMAL_TEXT);
     normal.getTextState().setFont(font);
