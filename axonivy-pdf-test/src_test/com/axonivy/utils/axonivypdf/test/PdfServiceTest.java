@@ -108,7 +108,7 @@ public class PdfServiceTest {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     Document doc = new Document();
 
-    Font font = FontRepository.findFont("Arial");
+    Font font = FontRepository.findFont("TimesRoman");
 
     Page page1 = doc.getPages().add();
     TextFragment text1 = new TextFragment("This is page 1.");
@@ -152,7 +152,7 @@ public class PdfServiceTest {
     Document doc = new Document();
     Page page = doc.getPages().add();
 
-    Font font = FontRepository.findFont("Arial");
+    Font font = FontRepository.findFont("TimesRoman");
 
     TextFragment normal = new TextFragment(NORMAL_TEXT);
     normal.getTextState().setFont(font);
