@@ -62,7 +62,7 @@ public class PdfService {
   private static final double DEFAULT_WATERMARK_ROTATION = 45;
   private static final String EXTRACTED_TEXT = "extracted_text";
   private static final String EXTRACTED_HIGHLIGHTED_TEXT = "extracted_highlighted_text";
-  private static final String TIMES_NEW_ROMAN_FONT = "Times New Roman";
+  private static final String TIMES_NEW_ROMAN_FONT = "TimesRoman";
   private static final String TEMP_ZIP_FILE_NAME = "split_pages";
   private static final String PDF_CONTENT_TYPE = "application/pdf";
   private static final String SPLIT_PAGE_NAME_PATTERN = "%s_page_%d";
