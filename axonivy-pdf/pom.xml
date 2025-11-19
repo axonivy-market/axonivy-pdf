@@ -13,7 +13,7 @@
   <version>13.1.1-SNAPSHOT</version>
   <packaging>iar</packaging>
   <properties>
-    <aspose.version>24.2</aspose.version>
+    <aspose.version>24.3</aspose.version>
   </properties>
   <dependencies>
     <dependency>

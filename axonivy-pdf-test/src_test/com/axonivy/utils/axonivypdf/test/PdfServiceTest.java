@@ -509,6 +509,8 @@ public class PdfServiceTest {
   @Test
   void testConvertPdfToDocx() throws Exception {
 //    testConversion(FileExtension.DOCX);
+
+    PdfFactory.loadLicense();
     
     UploadedFile uploadedFile = mockFile("a.pdf", createMockPdfWithTwoPages());
 
