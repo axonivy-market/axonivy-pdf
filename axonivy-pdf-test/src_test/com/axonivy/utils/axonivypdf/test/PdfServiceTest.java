@@ -527,9 +527,6 @@ public class PdfServiceTest {
 
   @Test
   void testHandleSplitIntoSinglePages() throws Exception {
-    // UploadedFile uploadedFile = mockUploadedFile();
-    // String originalFileName = uploadedFile.getFileName();
-
     UploadedFile uploadedFile = mockFile("a.pdf", createMockPdfWithTwoPages());
     String originalFileName = uploadedFile.getFileName();
 
