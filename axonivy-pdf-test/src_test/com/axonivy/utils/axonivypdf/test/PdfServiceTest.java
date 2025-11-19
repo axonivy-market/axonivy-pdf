@@ -53,7 +53,7 @@ public class PdfServiceTest {
   private static final String HIGHLIGHTED_TEXT = "This line of this document is highlighted for testing purpose.";;
   private static final String NORMAL_TEXT =
       "This line of this document is normal and not highlighted for testing purpose.";
-  private static final String TIMES_NEW_ROMAN_FONT = "Times New Roman";
+  private static final String TIMES_NEW_ROMAN_FONT = "Helvetica";
 
   @BeforeEach
   void setUp() throws Exception {
