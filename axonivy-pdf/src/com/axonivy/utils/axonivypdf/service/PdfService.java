@@ -54,6 +54,18 @@ import com.axonivy.utils.axonivypdf.enums.TextExtractType;
 import com.axonivy.utils.axonivypdf.exception.AxonivyPdfException;
 
 public class PdfService {
+  private static PdfService INSTANCE;
+
+  private PdfService() {}
+
+  public static PdfService getInstance() {
+    if (INSTANCE == null) {
+      INSTANCE = new PdfService();
+    }
+
+    return INSTANCE;
+  }
+
   private static final String DOT = ".";
   private static final float DEFAULT_FONT_SIZE = 12;
   private static final float DEFAULT_PAGE_NUMBER_FONT_SIZE = 14.0F;
@@ -93,8 +105,7 @@ public class PdfService {
     for (Page page : pdfDocument.getPages()) {
       page.addStamp(textStamp);
     }
-    pdfDocument.save(output);
-    pdfDocument.close();
+    saveAndCloseDocument(pdfDocument, output);
 
     return buildFileStream(output.toByteArray(), updateFileWithHeaderName(originalFileName));
   }
@@ -114,8 +125,7 @@ public class PdfService {
     for (Page page : pdfDocument.getPages()) {
       page.addStamp(textStamp);
     }
-    pdfDocument.save(output);
-    pdfDocument.close();
+    saveAndCloseDocument(pdfDocument, output);
 
     return buildFileStream(output.toByteArray(), updateFileWithFooterName(originalFileName));
   }
@@ -140,8 +150,7 @@ public class PdfService {
     for (Page page : pdfDocument.getPages()) {
       page.getArtifacts().add(artifact);
     }
-    pdfDocument.save(output);
-    pdfDocument.close();
+    saveAndCloseDocument(pdfDocument, output);
 
     return buildFileStream(output.toByteArray(), updateFileNameWithWatermark(originalFileName));
   }
@@ -156,8 +165,7 @@ public class PdfService {
     for (Page page : pdfDocument.getPages()) {
       page.setRotate(rotateOption);
     }
-    pdfDocument.save(output);
-    pdfDocument.close();
+    saveAndCloseDocument(pdfDocument, output);
 
     return buildFileStream(output.toByteArray(), updateRotatedFileName(originalFileName));
   }
@@ -184,8 +192,7 @@ public class PdfService {
     for (Page page : pdfDocument.getPages()) {
       page.addStamp(pageNumberStamp);
     }
-    pdfDocument.save(output);
-    pdfDocument.close();
+    saveAndCloseDocument(pdfDocument, output);
 
     return buildFileStream(output.toByteArray(), updateFileWithPageNumberName(originalFileName));
   }
@@ -197,9 +204,7 @@ public class PdfService {
 
     for (Page page : pdfDocument.getPages()) {
       for (Annotation annotation : page.getAnnotations()) {
-        if (annotation instanceof HighlightAnnotation) {
-          HighlightAnnotation highlight = (HighlightAnnotation) annotation;
-
+        if (annotation instanceof HighlightAnnotation highlight) {
           TextFragmentCollection fragments = highlight.getMarkedTextFragments();
           for (TextFragment tf : fragments) {
             highlightedText.append(tf.getText()).append(System.lineSeparator());
@@ -294,7 +299,9 @@ public class PdfService {
     ByteArrayOutputStream output = new ByteArrayOutputStream();
     Document pdfDocument = new Document(input);
 
-    if (FileExtension.DOCX == fileExtension) {
+    if (FileExtension.DOC == fileExtension) {
+      pdfDocument.save(output, SaveFormat.Doc);
+    } else if (FileExtension.DOCX == fileExtension) {
       pdfDocument.save(output, SaveFormat.DocX);
     } else if (FileExtension.XLSX == fileExtension) {
       pdfDocument.save(output, SaveFormat.Excel);
@@ -306,13 +313,24 @@ public class PdfService {
       options.setRasterImagesSavingMode(HtmlSaveOptions.RasterImagesSavingModes.AsPngImagesEmbeddedIntoSvg);
       options.setSplitIntoPages(false);
       pdfDocument.save(output, options);
-    } else if (FileExtension.JPG == fileExtension) {
-      return convertPdfToImagesZip(pdfDocument, originalFileName, FileExtension.JPG.getExtension());
-    } else if (FileExtension.JPEG == fileExtension) {
-      return convertPdfToImagesZip(pdfDocument, originalFileName, FileExtension.JPEG.getExtension());
+    } else {
+      return handleConvertPdfToImageTypes(pdfDocument, originalFileName, fileExtension);
     }
     pdfDocument.close();
     return buildFileStream(output.toByteArray(), updateFileWithNewExtension(originalFileName, fileExtension));
+  }
+
+  private DefaultStreamedContent handleConvertPdfToImageTypes(Document pdfDocument, String originalFileName,
+      FileExtension fileExtension) throws IOException {
+    if (FileExtension.JPG == fileExtension) {
+      return convertPdfToImagesZip(pdfDocument, originalFileName, FileExtension.JPG.getExtension());
+    } else if (FileExtension.JPEG == fileExtension) {
+      return convertPdfToImagesZip(pdfDocument, originalFileName, FileExtension.JPEG.getExtension());
+    } else if (FileExtension.PNG == fileExtension) {
+      return convertPdfToImagesZip(pdfDocument, originalFileName, FileExtension.PNG.getExtension());
+    } else {
+      return convertPdfToImagesZip(pdfDocument, originalFileName, FileExtension.JPG.getExtension());
+    }
   }
 
   private Path zipDirectory(Path directory, String prefix) throws IOException {
@@ -350,8 +368,7 @@ public class PdfService {
     }
 
     PdfFileEditor editor = new PdfFileEditor();
-    boolean result = editor.concatenate(inputStreams, output);
-    if (!result) {
+    if (!editor.concatenate(inputStreams, output)) {
       return null;
     }
     return buildFileStream(output.toByteArray(), MERGED_DOCUMENT_NAME);
@@ -375,8 +392,7 @@ public class PdfService {
       pdfDoc.close();
     } else if (fileName.endsWith(FileExtension.PDF.getExtension())) {
       Document pdfDoc = new Document(input);
-      pdfDoc.save(output);
-      pdfDoc.close();
+      saveAndCloseDocument(pdfDoc, output);
     }
 
     return buildFileStream(output.toByteArray(), updateFileWithPdfExtension(originalFileName));
@@ -398,8 +414,7 @@ public class PdfService {
     Image image = new Image();
     image.setImageStream(uploadedFile.getInputStream());
     page.getParagraphs().add(image);
-    pdfDocument.save(output);
-    pdfDocument.close();
+    saveAndCloseDocument(pdfDocument, output);
 
     return buildFileStream(output.toByteArray(), updateFileWithPdfExtension(originalFileName));
   }
@@ -435,11 +450,15 @@ public class PdfService {
         newDoc.getPages().add(pdfPage);
       }
 
-      newDoc.save(output);
-      newDoc.close();
+      saveAndCloseDocument(newDoc, output);
       pdfDocument.close();
       return buildFileStream(output.toByteArray(), updateRangeSplitFileName(originalFileName, startPage, endPage));
     }
+  }
+
+  private void saveAndCloseDocument(Document pdfDocument, ByteArrayOutputStream output) {
+    pdfDocument.save(output);
+    pdfDocument.close();
   }
 
   private void isInputInvalid(int startPage, int endPage, int originalDocPageSize) {
@@ -506,6 +525,27 @@ public class PdfService {
     return String.format(DOCUMENT_WITH_FOOTER_NAME_PATTERN, getBaseName(originalFileName, "with_footerer"));
   }
 
+
+  /**
+   * Generates a new .txt filename based on the original PDF filename and the type of text extraction performed.
+   * <p>
+   * If {@link TextExtractType#ALL} is specified, the method appends the suffix {@code "extracted_text"} to the base
+   * name of the original file. Otherwise, it appends {@code "extracted_highlighted_text"}. The base name is derived
+   * using {@code getBaseName()}, which removes the original file extension and prevents duplicate suffixes.
+   * </p>
+   *
+   * <p>
+   * <b>Examples:</b>
+   * </p>
+   * <ul>
+   * <li>{@code report.pdf} + ALL → {@code report_extracted_text.txt}</li>
+   * <li>{@code report.pdf} + HIGHLIGHTED → {@code report_extracted_highlighted_text.txt}</li>
+   * </ul>
+   *
+   * @param originalFileName the name of the original uploaded PDF file
+   * @param textExtractType the type of text extraction (ALL or HIGHLIGHTED)
+   * @return the generated .txt filename including the appropriate suffix
+   */
   private String updateTxtFileName(String originalFileName, TextExtractType textExtractType) {
     if (TextExtractType.ALL.equals(textExtractType)) {
       return String.format(TXT_FILE_NAME_PATTERN, getBaseName(originalFileName, EXTRACTED_TEXT), EXTRACTED_TEXT);

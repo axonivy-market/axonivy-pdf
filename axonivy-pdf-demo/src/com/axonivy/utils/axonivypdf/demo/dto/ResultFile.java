@@ -16,7 +16,6 @@ public class ResultFile {
     this.defaultStreamedContent = defaultStreamedContent;
   }
 
-  // getters & setters
   public String getName() {
     return name;
   }

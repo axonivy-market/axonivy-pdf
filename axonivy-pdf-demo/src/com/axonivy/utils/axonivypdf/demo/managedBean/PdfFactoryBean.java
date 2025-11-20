@@ -17,6 +17,7 @@ import org.primefaces.model.file.UploadedFile;
 import org.primefaces.model.file.UploadedFiles;
 
 import com.aspose.pdf.Document;
+import com.axonivy.utils.axonivypdf.demo.constant.DefaultInputConstant;
 import com.axonivy.utils.axonivypdf.enums.FileExtension;
 import com.axonivy.utils.axonivypdf.enums.RotateOption;
 import com.axonivy.utils.axonivypdf.enums.SplitOption;
@@ -34,21 +35,19 @@ public class PdfFactoryBean {
   private RotateOption selectedRotateOption = RotateOption.ROTATE_90;
   private Integer startPage;
   private Integer endPage;
-  private String headerText = "HEADER";
-  private String footerText = "FOOTER";
-  private String watermarkText = "ASPOSE_WATERMARK";
+  private String headerText = DefaultInputConstant.HEADER_TEXT;
+  private String footerText = DefaultInputConstant.FOOTER_TEXT;
+  private String watermarkText = DefaultInputConstant.WATERMARK_TEXT;
   private UploadedFile uploadedFile;
   private UploadedFiles uploadedFiles;
   private DefaultStreamedContent fileForDownload;
-  private List<RotateOption> rotateOptions =
-      Arrays.asList(RotateOption.ROTATE_90, RotateOption.ROTATE_180, RotateOption.ROTATE_270, RotateOption.ROTATE_360);
-  private List<FileExtension> otherDocumentTypes =
-      Arrays.asList(FileExtension.DOCX, FileExtension.XLSX, FileExtension.PPTX, FileExtension.JPG, FileExtension.JPEG);
-  private FileExtension selectedFileExtension = FileExtension.DOCX;
+  private List<RotateOption> rotateOptions = Arrays.asList(RotateOption.values());
+  private List<FileExtension> otherDocumentTypes = FileExtension.getOtherDocumentTypes();
+  private FileExtension selectedFileExtension = FileExtension.DOC;
 
   @PostConstruct
   public void init() {
-    pdfService = new PdfService();
+    pdfService = PdfService.getInstance();
     PdfFactory.loadLicense();
   }
 

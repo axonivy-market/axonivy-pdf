@@ -57,7 +57,7 @@ public class PdfServiceTest {
 
   @BeforeEach
   void setUp() throws Exception {
-    pdfService = new PdfService();
+    pdfService = PdfService.getInstance();
     PdfFactory.loadLicense();
   }
 
