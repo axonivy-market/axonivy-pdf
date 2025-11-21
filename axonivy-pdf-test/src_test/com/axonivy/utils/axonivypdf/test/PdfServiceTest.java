@@ -39,6 +39,7 @@ import com.aspose.pdf.Rotation;
 import com.aspose.pdf.TextAbsorber;
 import com.aspose.pdf.TextFragment;
 import com.aspose.pdf.TextFragmentAbsorber;
+import com.axonivy.utils.axonivypdf.enums.FileExtension;
 import com.axonivy.utils.axonivypdf.enums.TextExtractType;
 import com.axonivy.utils.axonivypdf.service.PdfFactory;
 import com.axonivy.utils.axonivypdf.service.PdfService;
@@ -528,5 +529,41 @@ public class PdfServiceTest {
         assertTrue(zipBytes.length > 0, "ZIP content should not be empty");
       }
     }
+  }
+
+  private void testConversion(FileExtension extension) throws Exception {
+    UploadedFile uploadedFile = mockFile("a.pdf", createMockPdfWithTwoPages());
+
+    DefaultStreamedContent result = pdfService.convertPdfToOtherDocumentTypes(uploadedFile, extension);
+
+    assertNotNull(result, "Result should not be null");
+
+    try (InputStream inputStream = result.getStream().get()) {
+      byte[] bytes = inputStream.readAllBytes();
+      assertTrue(bytes.length > 0, "Converted file should not be empty");
+    }
+
+    assertTrue(result.getName().endsWith("." + extension.name().toLowerCase()),
+        "Filename should have the correct extension");
+  }
+
+  @Test
+  void testConvertPdfToDocx() throws Exception {
+    testConversion(FileExtension.DOCX);
+  }
+
+  @Test
+  void testConvertPdfToXlsx() throws Exception {
+    testConversion(FileExtension.XLSX);
+  }
+
+  @Test
+  void testConvertPdfToPptx() throws Exception {
+    testConversion(FileExtension.PPTX);
+  }
+
+  @Test
+  void testConvertPdfToHtml() throws Exception {
+    testConversion(FileExtension.HTML);
   }
 }
