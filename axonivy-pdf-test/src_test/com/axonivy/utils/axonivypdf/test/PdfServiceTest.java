@@ -229,7 +229,8 @@ public class PdfServiceTest {
   }
 
   @Test
-  void testConvertImageToPdf() throws Exception {
+  void testConvertImagesToPdf() throws Exception {
+    UploadedFiles uploadedFiles = mock(UploadedFiles.class);
     BufferedImage image = new BufferedImage(100, 50, BufferedImage.TYPE_INT_RGB);
     Graphics2D g = image.createGraphics();
     g.setColor(Color.RED);
@@ -245,7 +246,9 @@ public class PdfServiceTest {
     when(uploadedFile.getContent()).thenReturn(pngBytes);
     when(uploadedFile.getInputStream()).thenReturn(new ByteArrayInputStream(pngBytes));
 
-    DefaultStreamedContent pdf = pdfService.convertImageToPdf(uploadedFile);
+    when(uploadedFiles.getFiles()).thenReturn(List.of(uploadedFile));
+
+    DefaultStreamedContent pdf = pdfService.convertImagesToSinglePdf(uploadedFiles);
 
     assertNotNull(pdf);
     assertEquals("test.pdf", pdf.getName());

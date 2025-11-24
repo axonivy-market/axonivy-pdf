@@ -398,25 +398,35 @@ public class PdfService {
     return buildFileStream(output.toByteArray(), updateFileWithPdfExtension(originalFileName));
   }
 
-  public DefaultStreamedContent convertImageToPdf(UploadedFile uploadedFile) throws IOException {
-    String originalFileName = uploadedFile.getFileName();
-    ByteArrayOutputStream output = new ByteArrayOutputStream();
+  private void addImageAsPageToDocument(Document pdfDocument, UploadedFile uploadedFile) throws IOException {
     BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(uploadedFile.getContent()));
     int widthPx = bufferedImage.getWidth();
     int heightPx = bufferedImage.getHeight();
 
-    Document pdfDocument = new Document();
     Page page = pdfDocument.getPages().add();
     page.getPageInfo().setWidth(widthPx);
     page.getPageInfo().setHeight(heightPx);
     page.getPageInfo().setMargin(new MarginInfo(0, 0, 0, 0));
 
     Image image = new Image();
-    image.setImageStream(uploadedFile.getInputStream());
+    image.setImageStream(new ByteArrayInputStream(uploadedFile.getContent()));
     page.getParagraphs().add(image);
+  }
+
+  public DefaultStreamedContent convertImagesToSinglePdf(UploadedFiles uploadedFiles) throws IOException {
+    String finalFileName =
+        uploadedFiles.getFiles().size() == 1 ? updateFileWithPdfExtension(uploadedFiles.getFiles().get(0).getFileName())
+            : MERGED_DOCUMENT_NAME;
+    ByteArrayOutputStream output = new ByteArrayOutputStream();
+    Document pdfDocument = new Document();
+
+    for (UploadedFile file : uploadedFiles.getFiles()) {
+      addImageAsPageToDocument(pdfDocument, file);
+    }
+
     saveAndCloseDocument(pdfDocument, output);
 
-    return buildFileStream(output.toByteArray(), updateFileWithPdfExtension(originalFileName));
+    return buildFileStream(output.toByteArray(), finalFileName);
   }
 
   public DefaultStreamedContent handleSplitIntoSinglePages(Document pdfDocument, String originalFileName)

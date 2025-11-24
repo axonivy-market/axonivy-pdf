@@ -162,11 +162,11 @@ public class PdfFactoryBean {
     pdfDocument.close();
   }
 
-  public void convertImageToPdf() throws IOException {
-    if (uploadedFile == null) {
-      throw new AxonivyPdfException("No file uploaded. Please upload a workbook file first.");
+  public void convertImagesToPdf() throws IOException {
+    if (uploadedFiles == null || uploadedFiles.getFiles().isEmpty()) {
+      throw new AxonivyPdfException("No files uploaded. Please upload images first.");
     }
-    setFileForDownload(pdfService.convertImageToPdf(uploadedFile));
+    setFileForDownload(pdfService.convertImagesToSinglePdf(uploadedFiles));
   }
 
   public void merge() throws IOException {
