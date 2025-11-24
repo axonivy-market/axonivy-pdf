@@ -12,9 +12,9 @@ Dialogs:
               ChooseHtmlFile: Choose HTML file
               Header: 'Axon Ivy Pdf Demo: Upload .html file and convert to .pdf file'
               Title: Convert HTML to PDF
-            ConvertImageToPdf:
-              ChooseImage: Choose image
-              Header: 'Axon Ivy Pdf Demo: Upload image and convert to .pdf file'
+            ConvertImagesToPdf:
+              ChooseImages: Choose image(s)
+              Header: 'Axon Ivy Pdf Demo: Upload image(s) and convert to .pdf file'
               Title: Convert image to PDF
             ConvertPdfToOtherDocumentTypes:
               Header: 'Axon Ivy Pdf Demo: Convert PDF file to other document types'
@@ -48,6 +48,7 @@ Dialogs:
               FooterText: Footer text
               Header: 'Axon Ivy Pdf Demo: Various PDF page operations'
               HeaderText: Header text
+              PageNumberFormat: Page {0} of {1}
               RotatePages: Rotate pages
               RotatePagesAndDownload: Rotate pages and download
               SelectRotateDegree: Select rotate degree
@@ -65,8 +66,8 @@ Dialogs:
 Processes:
   ConvertHtmlToPdf:
     name: Convert HTML file to PDF file
-  ConvertImageToPdf:
-    name: Convert image to PDF file
+  ConvertImagesToPdf:
+    name: Convert images to PDF file
   ConvertPdfToOtherDocumentTypes:
     name: Convert PDF file to other document types
   ExtractImagesFromPdf:

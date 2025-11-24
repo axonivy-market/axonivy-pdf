@@ -11,6 +11,7 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -52,6 +53,8 @@ import com.aspose.pdf.facades.PdfFileEditor;
 import com.axonivy.utils.axonivypdf.enums.FileExtension;
 import com.axonivy.utils.axonivypdf.enums.TextExtractType;
 import com.axonivy.utils.axonivypdf.exception.AxonivyPdfException;
+
+import ch.ivyteam.ivy.environment.Ivy;
 
 public class PdfService {
   private static PdfService INSTANCE;
@@ -179,7 +182,8 @@ public class PdfService {
 
     PageNumberStamp pageNumberStamp = new PageNumberStamp();
     pageNumberStamp.setBackground(false);
-    pageNumberStamp.setFormat("Page # of " + pdfDocument.getPages().size());
+    pageNumberStamp.setFormat(Ivy.cms().co("/Dialogs/com/axonivy/utils/axonivypdf/demo/PageOperations/PageNumberFormat",
+        List.of(1, pdfDocument.getPages().size())));
     pageNumberStamp.setBottomMargin(10);
     pageNumberStamp.setHorizontalAlignment(HorizontalAlignment.Center);
     pageNumberStamp.setStartingNumber(1);
