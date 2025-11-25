@@ -10,9 +10,11 @@
     <ui:define name="title">#{ivy.cms.co('/Dialogs/com/axonivy/utils/axonivypdf/demo/ConvertHtmlToPdf/Title')}</ui:define>
     <ui:define name="content">
       <p:dialog modal="true" widgetVar="download-status-dialog"
-        header="Status" draggable="false" closable="false"
+        header="Downloading" draggable="false" closable="false"
         resizable="false">
-        <i class="pi pi-spinner pi-spin" style="font-size: 3rem"></i>
+        <div class="flex align-items-center justify-content-center">
+          <i class="pi pi-spinner pi-spin" style="font-size: 3rem"></i>
+        </div>
       </p:dialog>
       <h2>#{ivy.cms.co('/Dialogs/com/axonivy/utils/axonivypdf/demo/ConvertHtmlToPdf/Header')}</h2>
       <h:form id="form" enctype="multipart/form-data">

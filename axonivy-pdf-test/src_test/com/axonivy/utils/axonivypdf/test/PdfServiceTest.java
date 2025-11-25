@@ -44,6 +44,7 @@ import com.axonivy.utils.axonivypdf.enums.TextExtractType;
 import com.axonivy.utils.axonivypdf.service.PdfFactory;
 import com.axonivy.utils.axonivypdf.service.PdfService;
 
+import ch.ivyteam.ivy.environment.Ivy;
 import ch.ivyteam.ivy.environment.IvyTest;
 
 @IvyTest
@@ -383,7 +384,8 @@ public class PdfServiceTest {
     int totalPages = pdfWithNumbers.getPages().size();
 
     for (int pageNum = 1; pageNum <= totalPages; pageNum++) {
-      String expectedText = "Page " + pageNum + " of " + totalPages;
+      String expectedText = Ivy.cms().co("/Dialogs/com/axonivy/utils/axonivypdf/demo/PageOperations/PageNumberFormat",
+          List.of(pageNum, totalPages));
       TextFragmentAbsorber absorber = new TextFragmentAbsorber(expectedText);
 
       pdfWithNumbers.getPages().get_Item(pageNum).accept(absorber);
