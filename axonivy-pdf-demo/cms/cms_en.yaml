@@ -1,0 +1,82 @@
+Dialogs:
+  com:
+    axonivy:
+      utils:
+        axonivypdf:
+          demo:
+            Common:
+              ChoosePdfFile: Choose PDF file
+              ChoosePdfFiles: Choose PDF file(s)
+              ConvertAndDownload: Convert and download
+            ConvertHtmlToPdf:
+              ChooseHtmlFile: Choose HTML file
+              Header: 'Axon Ivy Pdf Demo: Upload .html file and convert to .pdf file'
+              Title: Convert HTML to PDF
+            ConvertImagesToPdf:
+              ChooseImages: Choose image(s)
+              Header: 'Axon Ivy Pdf Demo: Upload image(s) and convert to .pdf file'
+              Title: Convert image to PDF
+            ConvertPdfToOtherDocumentTypes:
+              Header: 'Axon Ivy Pdf Demo: Convert PDF file to other document types'
+              SelectExtension: Select desired extension
+              Title: Convert PDF to other document types
+            ExtractImagesFromPdf:
+              ExtractImagesAndDownload: Extract images and download
+              Header: 'Axon Ivy Pdf Demo: Upload PDF file and extract images'
+              Title: Extract images from PDF
+            ExtractTextFromPdf:
+              ExtractAllText: Extract all text
+              ExtractOnlyHighlightedText: Extract only highlighted text
+              ExtractTextAndDownload: Extract text and download
+              Header: 'Axon Ivy Pdf Demo: Upload PDF file and extract text'
+              SelectExtractCriteria: Select extract criteria
+              Title: Extract text from PDF
+            MergePdfFiles:
+              Header: 'Axon Ivy Pdf Demo: Upload .pdf file(s) and merge into 1 pdf file'
+              MergeAndDownload: Merge and download
+              MergePdfFiles: Merge PDF files
+              Title: Upload and merge PDF Files
+            PageOperations:
+              AddFooter: Add footer
+              AddFooterAndDownload: Add footer and download
+              AddHeader: Add header
+              AddHeaderAndDownload: Add header and download
+              AddPageNumbers: Add page number
+              AddPageNumbersAndDownload: Add page numbers and download
+              AddWatermark: Add watermark
+              AddWatermarkAndDownload: Add watermark and download
+              FooterText: Footer text
+              Header: 'Axon Ivy Pdf Demo: Various PDF page operations'
+              HeaderText: Header text
+              PageNumberFormat: Page {0} of {1}
+              RotatePages: Rotate pages
+              RotatePagesAndDownload: Rotate pages and download
+              SelectRotateDegree: Select rotate degree
+              Title: PDF Pages Operations
+              WatermarkText: Watermark text
+            SplitPdf:
+              EndPage: End page
+              Header: 'Axon Ivy Pdf Demo: Upload .pdf file and split into multiple files'
+              SelectSplitCriteria: Select split criteria
+              SplitAndDownload: Split and download
+              SplitByRange: Split by page range
+              SplitIntoSinglePages: Split into single-page files
+              StartPage: Start page
+              Title: Split PDF
+Processes:
+  ConvertHtmlToPdf:
+    name: Convert HTML file to PDF file
+  ConvertImagesToPdf:
+    name: Convert images to PDF file
+  ConvertPdfToOtherDocumentTypes:
+    name: Convert PDF file to other document types
+  ExtractImagesFromPdf:
+    name: Extract images from PDF
+  ExtractTextFromPdf:
+    name: Extract text from PDF
+  MergePdfFiles:
+    name: Merge PDF files
+  PageOperations:
+    name: Various PDF pages operations
+  SplitPdf:
+    name: Split PDF
