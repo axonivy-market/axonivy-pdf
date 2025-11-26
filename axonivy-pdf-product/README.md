@@ -11,7 +11,7 @@ Axon Ivy PDF is a powerful utility library that provides comprehensive PDF manip
 - **Extract Content**: Extract text and images from PDF documents
 - **Page Operations**: Add watermarks, rotate pages, and manipulate PDF structure
 
-## Important: Use CellFactory for All Operations
+## Important: Use PdfFactory for All Operations
 **All PDF operations must use the `PdfFactory` class** to ensure proper Aspose license handling. Direct use of Aspose.PDF APIs without going through `PdfFactory` may result in unlicensed operation (evaluation mode) with functional limitations.
 
 ### License Management
@@ -24,19 +24,25 @@ For specific usage examples, refer to the demo processes included in the `axoniv
 The Axon Ivy PDF library includes comprehensive demo processes showcasing all available functionality:
 
 ### PDF Conversion
-- **Convert HTML to PDF**: Transform HTML content into professional PDF documents
-- Upload an HTML file.
 
-![HTML file](images/test_html.png)
+#### Convert HTML to PDF
+Transform HTML content into professional PDF documents:
 
-- Press convert and download to get the file in PDF format.
+1. Upload an HTML file:
 
-![Downloaded PDF file](images/downloaded_test_html_pdf.png)
+   ![HTML file](images/test_html.png)
 
-![PDF file](images/test_html_pdf.png)
+2. Press convert and download to get the file in PDF format:
 
-- **Convert Images to PDF**: Create PDF files from image formats (PNG, JPEG, etc.)
-- **Convert PDF to Other Formats**: Export PDFs to various document types including DOCX, PPTX, and XLSX
+   ![Downloaded PDF file](images/downloaded_test_html_pdf.png)
+
+   ![PDF file](images/test_html_pdf.png)
+
+#### Convert Images to PDF
+Create PDF files from image formats (PNG, JPEG, etc.)
+
+#### Convert PDF to Other Formats
+Export PDFs to various document types including DOCX, PPTX, and XLSX
 
 ### PDF Manipulation
 - **Merge PDF Files**: Combine multiple PDF documents into a single file
