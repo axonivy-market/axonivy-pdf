@@ -19,6 +19,23 @@ The `PdfFactory` automatically handles Aspose.PDF licensing through Axon Ivy's t
 
 For specific usage examples, refer to the demo processes included in the `axonivy-pdf-demo` module.
 
+**Example Usage:**
+```java
+import com.axonivy.utils.axonivypdf.service.PdfFactory;
+
+// For operations that return a value
+var result = PdfFactory.get(() -> {
+    // Your PDF operation code here
+    return yourPdfOperation();
+});
+
+// For operations that don't return a value
+PdfFactory.run(() -> {
+    // Your PDF operation code here
+    yourPdfOperation();
+});
+```
+
 ## Demo
 
 The Axon Ivy PDF library includes comprehensive demo processes showcasing all available functionality:
@@ -40,6 +57,18 @@ Transform HTML content into professional PDF documents:
 
 #### Convert Images to PDF
 Create PDF files from image formats (PNG, JPEG, etc.)
+
+1. Upload an image:
+
+   ![Test image](images/test_image.png)
+
+2. Press convert and download to get the file in PDF format:
+
+   ![Downloaded PDF file](images/downloaded_test_image_pdf.png)
+   
+3. You can upload multiple images and they will be merged into one file:
+
+   ![Upload multiple images](images/upload_multiple_images.png)
 
 #### Convert PDF to Other Formats
 Export PDFs to various document types including DOCX, PPTX, and XLSX
@@ -64,34 +93,3 @@ Retrieve text content from PDF documents
 Export embedded images from PDF files
 
 Each demo process includes practical examples and can be used as a starting point for implementing PDF operations in your own processes.
-
-## Setup
-
-To use the Axon Ivy PDF library in your project:
-
-1. **Add Dependency**: Include the `axonivy-pdf` library in your Axon Ivy project dependencies
-
-2. **Import into Process**: The library provides utility functions that can be called directly from your processes
-
-3. **Configuration** (if needed): Configure any required variables in your project settings
-
-### Important: Use PdfFactory for All Operations
-
-All PDF operations must use the `PdfFactory` class to ensure proper Aspose license handling. Direct use of Aspose.PDF APIs without going through `PdfFactory` may result in unlicensed operation (evaluation mode) with functional limitations.
-
-**Example Usage:**
-```java
-import com.axonivy.utils.axonivypdf.service.PdfFactory;
-
-// For operations that return a value
-var result = PdfFactory.get(() -> {
-    // Your PDF operation code here
-    return yourPdfOperation();
-});
-
-// For operations that don't return a value
-PdfFactory.run(() -> {
-    // Your PDF operation code here
-    yourPdfOperation();
-});
-```
