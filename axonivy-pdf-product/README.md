@@ -25,6 +25,16 @@ The Axon Ivy PDF library includes comprehensive demo processes showcasing all av
 
 ### PDF Conversion
 - **Convert HTML to PDF**: Transform HTML content into professional PDF documents
+- Upload an HTML file.
+
+![HTML file](images/test_html.png)
+
+- Press convert and download to get the file in PDF format.
+
+![Downloaded PDF file](images/downloaded_test_html_pdf.png)
+
+![PDF file](images/test_html_pdf.png)
+
 - **Convert Images to PDF**: Create PDF files from image formats (PNG, JPEG, etc.)
 - **Convert PDF to Other Formats**: Export PDFs to various document types including DOCX, PPTX, and XLSX
 
