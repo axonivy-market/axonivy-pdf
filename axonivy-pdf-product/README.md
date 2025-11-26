@@ -42,6 +42,10 @@ The Axon Ivy PDF library includes comprehensive demo processes showcasing all av
 
 ### PDF Conversion
 
+> **Note:** This utility supports converting PDF files to various document formats (DOCX, PPTX, XLSX, etc.). To convert other document types (DOC, DOCX, Excel) **to** PDF, please use:
+> - [Axon Ivy Words](https://market.axonivy.com/axonivy-words) for Word documents
+> - [Axon Ivy Cells](https://market.axonivy.com/axonivy-cells) for Excel spreadsheets
+
 #### Convert HTML to PDF
 Transform HTML content into professional PDF documents:
 
