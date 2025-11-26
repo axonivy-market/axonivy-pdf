@@ -94,7 +94,7 @@ Combine multiple PDF documents into a single file
 
 2. Press merge and download to get the merged result file:
 
-   ![Downloaded merged document](images/choose_type.png)
+   ![Downloaded merged document](images/downloaded_merged_document.png)
 
 #### Split PDF
 Divide PDF files by page ranges or extract specific pages
@@ -107,18 +107,42 @@ Divide PDF files by page ranges or extract specific pages
 
 3. If Split into single-page files is chosen, the result file will be a zip file containing all the pages of the original document:
 
-   ![Downloaded singple page zip](images/downloaded_cat_document_zip.png)
+   ![Downloaded single page zip](images/downloaded_cat_document_zip.png)
 
-   ![Downloaded singple page zip](images/single_pages_zip.png)
+   ![Single page zip content](images/single_pages_zip.png)
 
 4. If Split by page range is chosen, determine the start page and end page of the result document:
 
    ![Page range](images/page_range.png)
 
-   ![Downloaded singple page zip](images/downloaded_page_range.png)
+   ![Downloaded page range document](images/downloaded_page_range.png)
 
 #### Page Operations
 Add watermarks, rotate pages, and perform other page-level modifications
+
+1. Upload a PDF file
+
+2. Choose which operation you want to perform:
+
+   ![Page operations](images/page_operations.png)
+
+3. Rotate pages by selecting which rotate degree you want:
+
+   ![Rotate degree](images/rotate_degree.png)
+
+4. Add page number will add numbering to pages:
+
+   ![Numbered document](images/cats_document_numbered.png)
+
+   ![Numbered document page 1](images/cats_document_page_1.png)
+
+5. Add header/footer will add your desired text in header/footer:
+
+   ![Header footer](images/header_footer.png)
+
+5. Add watermark will add your desired text as a watermark:
+
+   ![Watermark document](images/watermark_document.png)
 
 ### Content Extraction
 
