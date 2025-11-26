@@ -1,4 +1,5 @@
 # Axon Ivy PDF
+*(formerly Docfactory)*
 
 Axon Ivy PDF is a powerful utility library that provides comprehensive PDF manipulation capabilities for your Axon Ivy applications. This library enables you to perform a wide range of PDF operations including converting various formats to PDF, merging and splitting PDF files, extracting content, and performing advanced page operations.
 
@@ -9,6 +10,14 @@ Axon Ivy PDF is a powerful utility library that provides comprehensive PDF manip
 - **Split PDFs**: Divide PDF files into separate documents by page ranges
 - **Extract Content**: Extract text and images from PDF documents
 - **Page Operations**: Add watermarks, rotate pages, and manipulate PDF structure
+
+## Important: Use CellFactory for All Operations
+**All PDF operations must use the `PdfFactory` class** to ensure proper Aspose license handling. Direct use of Aspose.PDF APIs without going through `PdfFactory` may result in unlicensed operation (evaluation mode) with functional limitations.
+
+### License Management
+The `PdfFactory` automatically handles Aspose.PDF licensing through Axon Ivy's third-party license service. No manual license configuration is required when using the factory methods.
+
+For specific usage examples, refer to the demo processes included in the `axonivy-pdf-demo` module.
 
 ## Demo
 
@@ -60,9 +69,3 @@ PdfFactory.run(() -> {
     yourPdfOperation();
 });
 ```
-
-### License Management
-
-The `PdfFactory` automatically handles Aspose.PDF licensing through Axon Ivy's third-party license service. No manual license configuration is required when using the factory methods.
-
-For specific usage examples, refer to the demo processes included in the `axonivy-pdf-demo` module.
