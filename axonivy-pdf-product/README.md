@@ -45,13 +45,23 @@ Create PDF files from image formats (PNG, JPEG, etc.)
 Export PDFs to various document types including DOCX, PPTX, and XLSX
 
 ### PDF Manipulation
-- **Merge PDF Files**: Combine multiple PDF documents into a single file
-- **Split PDF**: Divide PDF files by page ranges or extract specific pages
-- **Page Operations**: Add watermarks, rotate pages, and perform other page-level modifications
+
+#### Merge PDF Files
+Combine multiple PDF documents into a single file
+
+#### Split PDF
+Divide PDF files by page ranges or extract specific pages
+
+#### Page Operations
+Add watermarks, rotate pages, and perform other page-level modifications
 
 ### Content Extraction
-- **Extract Text from PDF**: Retrieve text content from PDF documents
-- **Extract Images from PDF**: Export embedded images from PDF files
+
+#### Extract Text from PDF
+Retrieve text content from PDF documents
+
+#### Extract Images from PDF
+Export embedded images from PDF files
 
 Each demo process includes practical examples and can be used as a starting point for implementing PDF operations in your own processes.
 
