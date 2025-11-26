@@ -23,7 +23,6 @@ import com.axonivy.utils.axonivypdf.enums.RotateOption;
 import com.axonivy.utils.axonivypdf.enums.SplitOption;
 import com.axonivy.utils.axonivypdf.enums.TextExtractType;
 import com.axonivy.utils.axonivypdf.exception.AxonivyPdfException;
-import com.axonivy.utils.axonivypdf.service.PdfFactory;
 import com.axonivy.utils.axonivypdf.service.PdfService;
 
 @ManagedBean
@@ -48,7 +47,6 @@ public class PdfFactoryBean {
   @PostConstruct
   public void init() {
     pdfService = PdfService.getInstance();
-    PdfFactory.loadLicense();
   }
 
   public void onSplitOptionChange() {
