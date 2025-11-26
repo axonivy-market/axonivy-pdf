@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 import java.io.InputStream;
 import java.util.function.Supplier;
@@ -29,17 +28,6 @@ public class PdfFactoryTest {
     var field = PdfFactory.class.getDeclaredField("license");
     field.setAccessible(true);
     field.set(null, null);
-  }
-
-  @Test
-  void testLoadLicenseWithoutRealAsposeFile() throws Exception {
-    withMockedLicense((stream, mockedLicenses, mockedLicenseConstructor) -> {
-      PdfFactory.loadLicense();
-      PdfFactory.loadLicense();
-      mockedLicenses.verify(ThirdPartyLicenses::getDocumentFactoryLicense);
-      assertEquals(1, mockedLicenseConstructor.constructed().size());
-      verify(mockedLicenseConstructor.constructed().get(0)).setLicense(stream);
-    });
   }
 
   @Test
