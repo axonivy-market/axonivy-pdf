@@ -1,9 +1,3 @@
-<!--
-Dear developer!     
-
-When you create your very valuable documentation, please be aware that this Readme.md is not only published on github. This documentation is also processed automatically and published on our website. For this to work, the two headings "Demo" and "Setup" must not be changed. Do also not change the order of the headings. Feel free to add sub-sections wherever you want.
--->
-
 # Axon Ivy PDF
 
 Axon Ivy PDF is a powerful utility library that provides comprehensive PDF manipulation capabilities for your Axon Ivy applications. This library enables you to perform a wide range of PDF operations including converting various formats to PDF, merging and splitting PDF files, extracting content, and performing advanced page operations.
@@ -15,10 +9,6 @@ Axon Ivy PDF is a powerful utility library that provides comprehensive PDF manip
 - **Split PDFs**: Divide PDF files into separate documents by page ranges
 - **Extract Content**: Extract text and images from PDF documents
 - **Page Operations**: Add watermarks, rotate pages, and manipulate PDF structure
-
-<!--
-The explanations under "MY-RRODUCT-NAME" are displayed  e.g. for the Connector A-Trust here: https://market.axonivy.com/a-trust#tab-description   
--->
 
 ## Demo
 
@@ -39,10 +29,6 @@ The Axon Ivy PDF library includes comprehensive demo processes showcasing all av
 - **Extract Images from PDF**: Export embedded images from PDF files
 
 Each demo process includes practical examples and can be used as a starting point for implementing PDF operations in your own processes.
-
-<!--
-We use all entries under the heading "Demo" for the demo-Tab on our Website, e.g. for the Connector A-Trust here: https://market.axonivy.com/a-trust#tab-demo  
--->
 
 ## Setup
 
@@ -80,11 +66,3 @@ PdfFactory.run(() -> {
 The `PdfFactory` automatically handles Aspose.PDF licensing through Axon Ivy's third-party license service. No manual license configuration is required when using the factory methods.
 
 For specific usage examples, refer to the demo processes included in the `axonivy-pdf-demo` module.
-
-<!--
-The entries under the heading "Setup" are filled in this tab, e.g. for the Connector A-Trust here: https://market.axonivy.com/a-trust#tab-setup. 
--->
-
-```
-@variables.yaml@
-```
