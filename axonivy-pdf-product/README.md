@@ -65,21 +65,21 @@ Create PDF files from image formats (PNG, JPEG, etc.)
 2. Press convert and download to get the file in PDF format:
 
    ![Downloaded PDF file](images/downloaded_test_image_pdf.png)
-   
-3. You can upload multiple images and they will be merged into one file:
+
+3. You can upload multiple images, and they will be merged into one file:
 
    ![Upload multiple images](images/upload_multiple_images.png)
 
 #### Convert PDF to Other Formats
 Export PDFs to various document types including DOCX, PPTX, and XLSX
 
-1. Upload a PDF file
+1. Upload a PDF file.
 
 2. Choose the result type:
 
    ![Choose type](images/choose_type.png)
 
-3. Press convert and download to get the file in desired format:
+3. Press convert and download to get the file in the desired format:
 
    ![Downloaded PPTX file](images/downloaded_pptx.png)
 
@@ -99,19 +99,19 @@ Combine multiple PDF documents into a single file
 #### Split PDF
 Divide PDF files by page ranges or extract specific pages
 
-1. Upload a PDF file
+1. Upload a PDF file.
 
-2. Choose split criteria:
+2. Select split criteria:
 
    ![Split criteria](images/split_criteria.png)
 
-3. If Split into single-page files is chosen, the result file will be a zip file containing all the pages of the original document:
+3. If **Split into single-page files** is chosen, the result file will be a zip file containing all the pages of the original document:
 
    ![Downloaded single page zip](images/downloaded_cat_document_zip.png)
 
    ![Single page zip content](images/single_pages_zip.png)
 
-4. If Split by page range is chosen, determine the start page and end page of the result document:
+4. If **Split by page range** is chosen, determine the start page and end page of the result document:
 
    ![Page range](images/page_range.png)
 
@@ -120,7 +120,7 @@ Divide PDF files by page ranges or extract specific pages
 #### Page Operations
 Add watermarks, rotate pages, and perform other page-level modifications
 
-1. Upload a PDF file
+1. Upload a PDF file.
 
 2. Choose which operation you want to perform:
 
@@ -130,17 +130,17 @@ Add watermarks, rotate pages, and perform other page-level modifications
 
    ![Rotate degree](images/rotate_degree.png)
 
-4. Add page number will add numbering to pages:
+4. **Add page number** will add numbering to pages:
 
    ![Numbered document](images/cats_document_numbered.png)
 
    ![Numbered document page 1](images/cats_document_page_1.png)
 
-5. Add header/footer will add your desired text in header/footer:
+5. **Add header/footer** will add your desired text in the header/footer:
 
    ![Header footer](images/header_footer.png)
 
-5. Add watermark will add your desired text as a watermark:
+6. **Add watermark** will add your desired text as a watermark:
 
    ![Watermark document](images/watermark_document.png)
 
@@ -149,7 +149,33 @@ Add watermarks, rotate pages, and perform other page-level modifications
 #### Extract Text from PDF
 Retrieve text content from PDF documents
 
+1. Upload a PDF file.
+
+2. Select extract criteria:
+
+   ![Extract criteria](images/extract_criteria.png)
+
+3. If **Extract all text** is chosen, all text from the document will be extracted:
+
+   ![Downloaded extracted all text](images/downloaded_extract_all_text.png)
+
+   ![Extracted all text](images/extracted_all_text.png)
+
+4. If **Extract highlighted text** is chosen, the highlighted text from the document will be extracted:
+
+   ![Highlighted text document](images/highlighted_text.png)
+
+   ![Downloaded extracted highlighted text](images/downloaded_extracted_highlighted_text.png)
+
+   ![Extracted highlighted text](images/extracted_highlighted_text.png)
+
 #### Extract Images from PDF
 Export embedded images from PDF files
 
-Each demo process includes practical examples and can be used as a starting point for implementing PDF operations in your own processes.
+1. Upload a PDF file.
+
+2. Press extract images and download to get a zip file containing all the images from the PDF file:
+
+   ![Downloaded extracted images](images/downloaded_extracted_images.png)
+
+   ![Images zip](images/images_zip.png)
