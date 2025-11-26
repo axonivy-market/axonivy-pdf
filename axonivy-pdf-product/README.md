@@ -73,6 +73,15 @@ Create PDF files from image formats (PNG, JPEG, etc.)
 #### Convert PDF to Other Formats
 Export PDFs to various document types including DOCX, PPTX, and XLSX
 
+1. Upload a PDF file:
+
+2. Choose the result type:
+
+   ![Choose type](images/choose_type.png)
+
+3. Press convert and download to get the file in desired format:
+
+   ![Downloaded PPTX file](images/downloaded_pptx.png)
 ### PDF Manipulation
 
 #### Merge PDF Files
