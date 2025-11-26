@@ -54,7 +54,30 @@ To use the Axon Ivy PDF library in your project:
 
 3. **Configuration** (if needed): Configure any required variables in your project settings
 
-No additional setup or external services are required. The library works out of the box with all PDF operations available immediately after installation.
+### Important: Use PdfFactory for All Operations
+
+All PDF operations must use the `PdfFactory` class to ensure proper Aspose license handling. Direct use of Aspose.PDF APIs without going through `PdfFactory` may result in unlicensed operation (evaluation mode) with functional limitations.
+
+**Example Usage:**
+```java
+import com.axonivy.utils.axonivypdf.service.PdfFactory;
+
+// For operations that return a value
+var result = PdfFactory.get(() -> {
+    // Your PDF operation code here
+    return yourPdfOperation();
+});
+
+// For operations that don't return a value
+PdfFactory.run(() -> {
+    // Your PDF operation code here
+    yourPdfOperation();
+});
+```
+
+### License Management
+
+The `PdfFactory` automatically handles Aspose.PDF licensing through Axon Ivy's third-party license service. No manual license configuration is required when using the factory methods.
 
 For specific usage examples, refer to the demo processes included in the `axonivy-pdf-demo` module.
 
