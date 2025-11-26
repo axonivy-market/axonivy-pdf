@@ -73,7 +73,7 @@ Create PDF files from image formats (PNG, JPEG, etc.)
 #### Convert PDF to Other Formats
 Export PDFs to various document types including DOCX, PPTX, and XLSX
 
-1. Upload a PDF file:
+1. Upload a PDF file
 
 2. Choose the result type:
 
@@ -82,13 +82,40 @@ Export PDFs to various document types including DOCX, PPTX, and XLSX
 3. Press convert and download to get the file in desired format:
 
    ![Downloaded PPTX file](images/downloaded_pptx.png)
+
 ### PDF Manipulation
 
 #### Merge PDF Files
 Combine multiple PDF documents into a single file
 
+1. Upload PDF files:
+
+   ![PDF files](images/multiple_pdf_files.png)
+
+2. Press merge and download to get the merged result file:
+
+   ![Downloaded merged document](images/choose_type.png)
+
 #### Split PDF
 Divide PDF files by page ranges or extract specific pages
+
+1. Upload a PDF file
+
+2. Choose split criteria:
+
+   ![Split criteria](images/split_criteria.png)
+
+3. If Split into single-page files is chosen, the result file will be a zip file containing all the pages of the original document:
+
+   ![Downloaded singple page zip](images/downloaded_cat_document_zip.png)
+
+   ![Downloaded singple page zip](images/single_pages_zip.png)
+
+4. If Split by page range is chosen, determine the start page and end page of the result document:
+
+   ![Page range](images/page_range.png)
+
+   ![Downloaded singple page zip](images/downloaded_page_range.png)
 
 #### Page Operations
 Add watermarks, rotate pages, and perform other page-level modifications
