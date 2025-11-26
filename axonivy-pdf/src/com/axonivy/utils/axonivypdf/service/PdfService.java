@@ -93,7 +93,17 @@ public class PdfService {
   private static final String RANGE_SPLIT_FILE_NAME_PATTERN = "%s_page_%d_to_%d" + FileExtension.PDF.getExtension();
   private static final String FILE_NAME_WITH_WATERMARK_PATTERN = "%s_with_watermark" + FileExtension.PDF.getExtension();
 
-  public DefaultStreamedContent addHeader(UploadedFile uploadedFile, String headerText) throws IOException {
+  public DefaultStreamedContent addHeader(UploadedFile uploadedFile, String headerText) {
+    return PdfFactory.get(() -> {
+      try {
+        return addHeaderInternal(uploadedFile, headerText);
+      } catch (IOException e) {
+        throw new AxonivyPdfException(e.getMessage());
+      }
+    });
+  }
+
+  private DefaultStreamedContent addHeaderInternal(UploadedFile uploadedFile, String headerText) throws IOException {
     String originalFileName = uploadedFile.getFileName();
     InputStream input = uploadedFile.getInputStream();
     ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -113,7 +123,17 @@ public class PdfService {
     return buildFileStream(output.toByteArray(), updateFileWithHeaderName(originalFileName));
   }
 
-  public DefaultStreamedContent addFooter(UploadedFile uploadedFile, String footerText) throws IOException {
+  public DefaultStreamedContent addFooter(UploadedFile uploadedFile, String footerText) {
+    return PdfFactory.get(() -> {
+      try {
+        return addFooterInternal(uploadedFile, footerText);
+      } catch (IOException e) {
+        throw new AxonivyPdfException(e.getMessage());
+      }
+    });
+  }
+
+  private DefaultStreamedContent addFooterInternal(UploadedFile uploadedFile, String footerText) throws IOException {
     String originalFileName = uploadedFile.getFileName();
     InputStream input = uploadedFile.getInputStream();
     ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -133,7 +153,18 @@ public class PdfService {
     return buildFileStream(output.toByteArray(), updateFileWithFooterName(originalFileName));
   }
 
-  public DefaultStreamedContent addWatermark(UploadedFile uploadedFile, String watermarkText) throws IOException {
+  public DefaultStreamedContent addWatermark(UploadedFile uploadedFile, String watermarkText) {
+    return PdfFactory.get(() -> {
+      try {
+        return addWatermarkInternal(uploadedFile, watermarkText);
+      } catch (IOException e) {
+        throw new AxonivyPdfException(e.getMessage());
+      }
+    });
+  }
+
+  private DefaultStreamedContent addWatermarkInternal(UploadedFile uploadedFile, String watermarkText)
+      throws IOException {
     String originalFileName = uploadedFile.getFileName();
     InputStream input = uploadedFile.getInputStream();
     ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -158,7 +189,18 @@ public class PdfService {
     return buildFileStream(output.toByteArray(), updateFileNameWithWatermark(originalFileName));
   }
 
-  public DefaultStreamedContent rotatePages(UploadedFile uploadedFile, int rotateOption) throws IOException {
+  public DefaultStreamedContent rotatePages(UploadedFile uploadedFile, int rotateOption) {
+    return PdfFactory.get(() -> {
+      try {
+        return rotatePagesInternal(uploadedFile, rotateOption);
+      } catch (IOException e) {
+        throw new AxonivyPdfException(e.getMessage());
+      }
+    });
+  }
+
+
+  public DefaultStreamedContent rotatePagesInternal(UploadedFile uploadedFile, int rotateOption) throws IOException {
     String originalFileName = uploadedFile.getFileName();
     InputStream input = uploadedFile.getInputStream();
     ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -173,7 +215,17 @@ public class PdfService {
     return buildFileStream(output.toByteArray(), updateRotatedFileName(originalFileName));
   }
 
-  public DefaultStreamedContent addPageNumbers(UploadedFile uploadedFile) throws IOException {
+  public DefaultStreamedContent addPageNumbers(UploadedFile uploadedFile) {
+    return PdfFactory.get(() -> {
+      try {
+        return addPageNumbersInternal(uploadedFile);
+      } catch (IOException e) {
+        throw new AxonivyPdfException(e.getMessage());
+      }
+    });
+  }
+
+  private DefaultStreamedContent addPageNumbersInternal(UploadedFile uploadedFile) throws IOException {
     String originalFileName = uploadedFile.getFileName();
     InputStream input = uploadedFile.getInputStream();
     ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -202,6 +254,17 @@ public class PdfService {
   }
 
   public DefaultStreamedContent extractHighlightedText(String originalFileName, InputStream input,
+      ByteArrayOutputStream textStream, OutputStreamWriter writer, TextExtractType textExtractType) {
+    return PdfFactory.get(() -> {
+      try {
+        return extractHighlightedTextInternal(originalFileName, input, textStream, writer, textExtractType);
+      } catch (IOException e) {
+        throw new AxonivyPdfException(e.getMessage());
+      }
+    });
+  }
+
+  private DefaultStreamedContent extractHighlightedTextInternal(String originalFileName, InputStream input,
       ByteArrayOutputStream textStream, OutputStreamWriter writer, TextExtractType textExtractType) throws IOException {
     Document pdfDocument = new Document(input);
     StringBuilder highlightedText = new StringBuilder();
@@ -226,6 +289,17 @@ public class PdfService {
   }
 
   public DefaultStreamedContent extractAllText(String originalFileName, InputStream input,
+      ByteArrayOutputStream textStream, OutputStreamWriter writer, TextExtractType textExtractType) {
+    return PdfFactory.get(() -> {
+      try {
+        return extractAllTextInternal(originalFileName, input, textStream, writer, textExtractType);
+      } catch (IOException e) {
+        throw new AxonivyPdfException(e.getMessage());
+      }
+    });
+  }
+
+  public DefaultStreamedContent extractAllTextInternal(String originalFileName, InputStream input,
       ByteArrayOutputStream textStream, OutputStreamWriter writer, TextExtractType textExtractType) throws IOException {
     Document pdfDocument = new Document(input);
     TextAbsorber textAbsorber = new TextAbsorber();
@@ -242,7 +316,17 @@ public class PdfService {
     return buildFileStream(textStream.toByteArray(), updateTxtFileName(originalFileName, textExtractType));
   }
 
-  public DefaultStreamedContent extractImagesFromPdf(UploadedFile uploadedFile) throws IOException {
+  public DefaultStreamedContent extractImagesFromPdf(UploadedFile uploadedFile) {
+    return PdfFactory.get(() -> {
+      try {
+        return extractImagesFromPdfInternal(uploadedFile);
+      } catch (IOException e) {
+        throw new AxonivyPdfException(e.getMessage());
+      }
+    });
+  }
+
+  private DefaultStreamedContent extractImagesFromPdfInternal(UploadedFile uploadedFile) throws IOException {
     Path tempDir = Files.createTempDirectory(TEMP_ZIP_FILE_NAME);
     String originalFileName = uploadedFile.getFileName();
     InputStream input = uploadedFile.getInputStream();
@@ -273,31 +357,18 @@ public class PdfService {
     return buildFileStream(zipBytes, updateImageZipName(originalFileName));
   }
 
-  public DefaultStreamedContent convertPdfToImagesZip(Document pdfDocument, String originalFileName, String extension)
-      throws IOException {
-    Path tempDir = Files.createTempDirectory(TEMP_ZIP_FILE_NAME);
-    int pageCount = 1;
-    for (Page pdfPage : pdfDocument.getPages()) {
-      JpegDevice jpegDevice = new JpegDevice();
-
-      try (ByteArrayOutputStream imageStream = new ByteArrayOutputStream()) {
-        jpegDevice.process(pdfPage, imageStream);
-
-        Path imageFile = tempDir.resolve(String.format(SPLIT_PAGE_NAME_PATTERN + extension,
-            StringUtils.substringBeforeLast(originalFileName, DOT), pageCount));
-        Files.write(imageFile, imageStream.toByteArray());
+  public DefaultStreamedContent convertPdfToOtherDocumentTypes(UploadedFile uploadedFile, FileExtension fileExtension) {
+    return PdfFactory.get(() -> {
+      try {
+        return convertPdfToOtherDocumentTypesInternal(uploadedFile, fileExtension);
+      } catch (IOException e) {
+        throw new AxonivyPdfException(e.getMessage());
       }
-
-      pageCount++;
-    }
-    byte[] zipBytes = Files.readAllBytes(zipDirectory(tempDir, TEMP_ZIP_FILE_NAME));
-    pdfDocument.close();
-
-    return buildFileStream(zipBytes, updateImageZipName(originalFileName));
+    });
   }
 
-  public DefaultStreamedContent convertPdfToOtherDocumentTypes(UploadedFile uploadedFile, FileExtension fileExtension)
-      throws IOException {
+  private DefaultStreamedContent convertPdfToOtherDocumentTypesInternal(UploadedFile uploadedFile,
+      FileExtension fileExtension) throws IOException {
     String originalFileName = uploadedFile.getFileName();
     InputStream input = uploadedFile.getInputStream();
     ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -337,6 +408,29 @@ public class PdfService {
     }
   }
 
+  public DefaultStreamedContent convertPdfToImagesZip(Document pdfDocument, String originalFileName, String extension)
+      throws IOException {
+    Path tempDir = Files.createTempDirectory(TEMP_ZIP_FILE_NAME);
+    int pageCount = 1;
+    for (Page pdfPage : pdfDocument.getPages()) {
+      JpegDevice jpegDevice = new JpegDevice();
+
+      try (ByteArrayOutputStream imageStream = new ByteArrayOutputStream()) {
+        jpegDevice.process(pdfPage, imageStream);
+
+        Path imageFile = tempDir.resolve(String.format(SPLIT_PAGE_NAME_PATTERN + extension,
+            StringUtils.substringBeforeLast(originalFileName, DOT), pageCount));
+        Files.write(imageFile, imageStream.toByteArray());
+      }
+
+      pageCount++;
+    }
+    byte[] zipBytes = Files.readAllBytes(zipDirectory(tempDir, TEMP_ZIP_FILE_NAME));
+    pdfDocument.close();
+
+    return buildFileStream(zipBytes, updateImageZipName(originalFileName));
+  }
+
   private Path zipDirectory(Path directory, String prefix) throws IOException {
     Path zipPath = Files.createTempFile(prefix, FileExtension.ZIP.getExtension());
 
@@ -362,7 +456,17 @@ public class PdfService {
     return zipPath;
   }
 
-  public DefaultStreamedContent merge(UploadedFiles uploadedFiles) throws IOException {
+  public DefaultStreamedContent merge(UploadedFiles uploadedFiles) {
+    return PdfFactory.get(() -> {
+      try {
+        return mergeInternal(uploadedFiles);
+      } catch (IOException e) {
+        throw new AxonivyPdfException(e.getMessage());
+      }
+    });
+  }
+
+  public DefaultStreamedContent mergeInternal(UploadedFiles uploadedFiles) throws IOException {
     ByteArrayOutputStream output = new ByteArrayOutputStream();
     int uploadedFilesSize = uploadedFiles.getFiles().size();
     InputStream[] inputStreams = new InputStream[uploadedFilesSize];
@@ -378,7 +482,17 @@ public class PdfService {
     return buildFileStream(output.toByteArray(), MERGED_DOCUMENT_NAME);
   }
 
-  public DefaultStreamedContent convertHtmlToPdf(UploadedFile uploadedFile) throws IOException {
+  public DefaultStreamedContent convertHtmlToPdf(UploadedFile uploadedFile) {
+    return PdfFactory.get(() -> {
+      try {
+        return convertHtmlToPdfInternal(uploadedFile);
+      } catch (IOException e) {
+        throw new AxonivyPdfException(e.getMessage());
+      }
+    });
+  }
+
+  private DefaultStreamedContent convertHtmlToPdfInternal(UploadedFile uploadedFile) throws IOException {
     InputStream input = uploadedFile.getInputStream();
     ByteArrayOutputStream output = new ByteArrayOutputStream();
     String originalFileName = uploadedFile.getFileName();
@@ -402,22 +516,17 @@ public class PdfService {
     return buildFileStream(output.toByteArray(), updateFileWithPdfExtension(originalFileName));
   }
 
-  private void addImageAsPageToDocument(Document pdfDocument, UploadedFile uploadedFile) throws IOException {
-    BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(uploadedFile.getContent()));
-    int widthPx = bufferedImage.getWidth();
-    int heightPx = bufferedImage.getHeight();
-
-    Page page = pdfDocument.getPages().add();
-    page.getPageInfo().setWidth(widthPx);
-    page.getPageInfo().setHeight(heightPx);
-    page.getPageInfo().setMargin(new MarginInfo(0, 0, 0, 0));
-
-    Image image = new Image();
-    image.setImageStream(new ByteArrayInputStream(uploadedFile.getContent()));
-    page.getParagraphs().add(image);
+  public DefaultStreamedContent convertImagesToSinglePdf(UploadedFiles uploadedFiles) {
+    return PdfFactory.get(() -> {
+      try {
+        return convertImagesToSinglePdfInternal(uploadedFiles);
+      } catch (IOException e) {
+        throw new AxonivyPdfException(e.getMessage());
+      }
+    });
   }
 
-  public DefaultStreamedContent convertImagesToSinglePdf(UploadedFiles uploadedFiles) throws IOException {
+  public DefaultStreamedContent convertImagesToSinglePdfInternal(UploadedFiles uploadedFiles) throws IOException {
     String finalFileName =
         uploadedFiles.getFiles().size() == 1 ? updateFileWithPdfExtension(uploadedFiles.getFiles().get(0).getFileName())
             : MERGED_DOCUMENT_NAME;
@@ -433,7 +542,32 @@ public class PdfService {
     return buildFileStream(output.toByteArray(), finalFileName);
   }
 
-  public DefaultStreamedContent handleSplitIntoSinglePages(Document pdfDocument, String originalFileName)
+  private void addImageAsPageToDocument(Document pdfDocument, UploadedFile uploadedFile) throws IOException {
+    BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(uploadedFile.getContent()));
+    int widthPx = bufferedImage.getWidth();
+    int heightPx = bufferedImage.getHeight();
+
+    Page page = pdfDocument.getPages().add();
+    page.getPageInfo().setWidth(widthPx);
+    page.getPageInfo().setHeight(heightPx);
+    page.getPageInfo().setMargin(new MarginInfo(0, 0, 0, 0));
+
+    Image image = new Image();
+    image.setImageStream(new ByteArrayInputStream(uploadedFile.getContent()));
+    page.getParagraphs().add(image);
+  }
+
+  public DefaultStreamedContent handleSplitIntoSinglePages(Document pdfDocument, String originalFileName) {
+    return PdfFactory.get(() -> {
+      try {
+        return handleSplitIntoSinglePagesInternal(pdfDocument, originalFileName);
+      } catch (IOException e) {
+        throw new AxonivyPdfException(e.getMessage());
+      }
+    });
+  }
+
+  public DefaultStreamedContent handleSplitIntoSinglePagesInternal(Document pdfDocument, String originalFileName)
       throws IOException {
     Path tempDir = Files.createTempDirectory(TEMP_ZIP_FILE_NAME);
     int pageCount = 1;
@@ -453,6 +587,17 @@ public class PdfService {
   }
 
   public DefaultStreamedContent handleSplitByRange(Document pdfDocument, String originalFileName, int startPage,
+      int endPage) {
+    return PdfFactory.get(() -> {
+      try {
+        return handleSplitByRangeInternal(pdfDocument, originalFileName, startPage, endPage);
+      } catch (IOException e) {
+        throw new AxonivyPdfException(e.getMessage());
+      }
+    });
+  }
+
+  public DefaultStreamedContent handleSplitByRangeInternal(Document pdfDocument, String originalFileName, int startPage,
       int endPage) throws IOException {
     int pageSize = pdfDocument.getPages().size();
     isInputInvalid(startPage, endPage, pageSize);

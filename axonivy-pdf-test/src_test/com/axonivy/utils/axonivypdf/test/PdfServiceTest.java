@@ -41,7 +41,6 @@ import com.aspose.pdf.TextFragment;
 import com.aspose.pdf.TextFragmentAbsorber;
 import com.axonivy.utils.axonivypdf.enums.FileExtension;
 import com.axonivy.utils.axonivypdf.enums.TextExtractType;
-import com.axonivy.utils.axonivypdf.service.PdfFactory;
 import com.axonivy.utils.axonivypdf.service.PdfService;
 
 import ch.ivyteam.ivy.environment.Ivy;
@@ -60,7 +59,6 @@ public class PdfServiceTest {
   @BeforeEach
   void setUp() throws Exception {
     pdfService = PdfService.getInstance();
-    PdfFactory.loadLicense();
   }
 
   private byte[] createMockPdf() throws Exception {
