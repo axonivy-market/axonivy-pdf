@@ -29,7 +29,7 @@ public class PdfFactory {
    * application in evaluation mode.
    * </p>
    */
-  public static void loadLicense() {
+  protected static void loadLicense() {
     if (license != null) {
       return;
     }
