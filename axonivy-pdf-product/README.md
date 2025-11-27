@@ -4,7 +4,7 @@
 Axon Ivy PDF is a powerful utility library that provides comprehensive PDF manipulation capabilities for your Axon Ivy applications. This library enables you to perform a wide range of PDF operations including converting various formats to PDF, merging and splitting PDF files, extracting content, and performing advanced page operations.
 
 **Key Features:**
-- **Convert to PDF**: Transform HTML content and images into PDF documents
+- **Convert to PDF**: Transform HTML content and images into PDF documents. *Note: To convert other document types (DOC, DOCX, Excel) to PDF, please use [Axon Ivy Words](https://market.axonivy.com/axonivy-words) for Word documents or [Axon Ivy Cells](https://market.axonivy.com/axonivy-cells) for Excel spreadsheets.*
 - **Convert from PDF**: Export PDF files to other document formats (DOCX, PPTX, XLSX, etc.)
 - **Merge PDFs**: Combine multiple PDF files into a single document
 - **Split PDFs**: Divide PDF files into separate documents by page ranges
@@ -41,10 +41,6 @@ PdfFactory.run(() -> {
 The Axon Ivy PDF library includes comprehensive demo processes showcasing all available functionality:
 
 ### PDF Conversion
-
-> **Note:** This utility supports converting PDF files to various document formats (DOCX, PPTX, XLSX, etc.). To convert other document types (DOC, DOCX, Excel) **to** PDF, please use:
-> - [Axon Ivy Words](https://market.axonivy.com/axonivy-words) for Word documents
-> - [Axon Ivy Cells](https://market.axonivy.com/axonivy-cells) for Excel spreadsheets
 
 #### Convert HTML to PDF
 Transform HTML content into professional PDF documents:
