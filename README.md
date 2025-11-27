@@ -1,7 +1,7 @@
 # Axon Ivy PDF
 
-[![CI Build](https://github.com/axonivy-market/Axon Ivy PDF/actions/workflows/ci.yml/badge.svg)](https://github.com/axonivy-market/Axon Ivy PDF/actions/workflows/ci.yml)
+[![CI Build](https://github.com/axonivy-market/axonivy-pdf/actions/workflows/ci.yml/badge.svg)](https://github.com/axonivy-market/axonivy-pdf/actions/workflows/ci.yml)
 
-"YOUR SHORT DESCRIPTION GOES HERE"
+A lightweight utility that simplifies PDF processing tasks inside the Axon Ivy Platform.
 
 Read our [documentation](axonivy-pdf-product/README.md).
