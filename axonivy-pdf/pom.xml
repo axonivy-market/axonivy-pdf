@@ -2,24 +2,17 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>com.axonivy.ivy.api</groupId>
-    <artifactId>ivy-project-parent</artifactId>
-    <version>13.1.1</version>
-    <relativePath></relativePath>
-  </parent>
   <groupId>com.axonivy.utils.axonivypdf</groupId>
   <artifactId>axonivy-pdf</artifactId>
-  <version>13.1.1-SNAPSHOT</version>
+  <version>12.0.11-SNAPSHOT</version>
   <packaging>iar</packaging>
   <properties>
     <aspose.version>24.3</aspose.version>
+    <project.build.plugin.version>12.0.8</project.build.plugin.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <apache.pdfbox.version>3.0.4</apache.pdfbox.version>
   </properties>
   <dependencies>
-    <dependency>
-      <groupId>com.axonivy.ivy.api</groupId>
-      <artifactId>ivy-api</artifactId>
-    </dependency>
     <dependency>
       <groupId>com.aspose</groupId>
       <artifactId>aspose-pdf</artifactId>
@@ -51,6 +44,7 @@
       <plugin>
         <groupId>com.axonivy.ivy.ci</groupId>
         <artifactId>project-build-plugin</artifactId>
+        <version>${project.build.plugin.version}</version>
         <extensions>true</extensions>
       </plugin>
     </plugins>
