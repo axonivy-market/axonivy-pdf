@@ -1,5 +1,5 @@
 {
-  "$schema" : "https://json-schema.axonivy.com/process/13.1.2/process.json",
+  "$schema" : "https://json-schema.axonivy.com/process/13.2.0/process.json",
   "id" : "19AB54D6E02DB99A",
   "config" : {
     "data" : "com.axonivy.utils.axonivypdf.demo.ConvertImagesToPdfData"

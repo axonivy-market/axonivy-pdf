@@ -14,6 +14,7 @@
                         
         
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src_dataClasses"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src_generated"/>
                 
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src_test"/>
                         
