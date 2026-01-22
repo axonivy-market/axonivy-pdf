@@ -3,7 +3,7 @@
   <groupId>com.axonivy.utils.axonivypdf</groupId>
   <name>axonivy-pdf</name>
   <artifactId>axonivy-pdf-modules</artifactId>
-  <version>13.2.0-SNAPSHOT</version>
+  <version>13.2.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <modules>
