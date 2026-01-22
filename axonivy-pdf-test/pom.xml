@@ -5,17 +5,13 @@
   <parent>
     <groupId>com.axonivy.ivy.api</groupId>
     <artifactId>ivy-project-parent</artifactId>
-    <version>13.1.1</version>
+    <version>13.2.0</version>
     <relativePath></relativePath>
   </parent>
   <groupId>com.axonivy.utils.axonivypdf</groupId>
   <artifactId>axonivy-pdf-test</artifactId>
-  <version>13.1.1-SNAPSHOT</version>
-  <packaging>iar-integration-test</packaging>
-  <properties>
-    <tester.version>13.1.1</tester.version>
-    <project.build.plugin.version>13.1.1</project.build.plugin.version>
-  </properties>
+  <version>13.2.0-SNAPSHOT</version>
+  <packaging>iar</packaging>
   <dependencies>
     <dependency>
       <groupId>com.axonivy.utils.axonivypdf</groupId>
@@ -24,9 +20,9 @@
       <type>iar</type>
     </dependency>
     <dependency>
-    	<groupId>com.axonivy.ivy.test</groupId>
-    	<artifactId>unit-tester</artifactId>
-    	<scope>test</scope>
+      <groupId>com.axonivy.ivy.api.test</groupId>
+      <artifactId>ivy-test-api</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
