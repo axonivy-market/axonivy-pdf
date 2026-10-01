@@ -1,5 +1,0 @@
-{
-  "$schema" : "https://json-schema.axonivy.com/14.0-dev/project/data-class.json",
-  "simpleName" : "ExtractTextFromPdfData",
-  "namespace" : "com.axonivy.utils.axonivypdf.demo"
-}

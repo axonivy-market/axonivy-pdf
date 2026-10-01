@@ -1,5 +1,6 @@
 package com.axonivy.utils.axonivypdf.demo.managedBean;
 
+import java.io.Serializable;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,9 +9,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.view.ViewScoped;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Named;
+import jakarta.faces.view.ViewScoped;
 
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.file.UploadedFile;
@@ -25,9 +26,9 @@ import com.axonivy.utils.axonivypdf.enums.TextExtractType;
 import com.axonivy.utils.axonivypdf.exception.AxonivyPdfException;
 import com.axonivy.utils.axonivypdf.service.PdfService;
 
-@ManagedBean
+@Named
 @ViewScoped
-public class PdfFactoryBean {
+public class PdfFactoryBean implements Serializable {
   private PdfService pdfService;
   private SplitOption splitOption = SplitOption.ALL;
   private TextExtractType textExtractType = TextExtractType.ALL;
