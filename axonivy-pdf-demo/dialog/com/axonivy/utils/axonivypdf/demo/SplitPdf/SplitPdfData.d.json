@@ -1,0 +1,5 @@
+{
+  "$schema" : "https://json-schema.axonivy.com/14.0/project/data-class.json",
+  "simpleName" : "SplitPdfData",
+  "namespace" : "com.axonivy.utils.axonivypdf.demo.SplitPdf"
+}
